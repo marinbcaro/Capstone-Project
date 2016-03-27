@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contentFrame2"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_gravity="bottom"
+android:background="@color/cardview_dark_background">
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
+
+
+    <Button
+        android:id="@+id/btn2"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+
+        android:background="@color/cardview_dark_background"
+        android:drawableTop="@drawable/home"
+        android:text="Home"
+        android:textAllCaps="false"
+        android:textColor="#FFF" />
+
+
+    <Button
+
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/cardview_dark_background"
+        android:drawableTop="@drawable/wishlist"
+        android:text="Wish List"
+        android:textAllCaps="false"
+        android:textColor="#FFF" />
+
+    <Button
+
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/cardview_dark_background"
+        android:drawableTop="@drawable/notification"
+        android:text="Notifications"
+        android:textAllCaps="false"
+        android:textColor="#FFF" />
+
+
+</LinearLayout>
+</FrameLayout>
