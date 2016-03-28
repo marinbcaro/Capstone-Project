@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Product;
+import com.example.carolinamarin.stylestumble.data.Product.Brand;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
 import com.example.carolinamarin.swipecards.model.CardModel;
 import com.example.carolinamarin.swipecards.view.CardContainer;
@@ -22,6 +24,7 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
     private CardContainer mCardContainer;
     private SimpleCardStackAdapter adapter;
     private ProductsContract.UserActionsListener mActionsListener;
+    private int number_products=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +59,13 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
             // adapter.add(product.getId(), product.getDescription(),product.getName(),product.getUrl(),product.getBrand(),product.getPrice());
             //  addProduct(product.getId(), product.getmDescription(),product.getName(),product.getUrl(),product.getBrand(),product.getPrice());
 
-            CardModel card = new CardModel(product.getId(), product.getDescription(), product.image.sizes.IPhoneSmall.url);
+            String name="";
+            Brand h=product.brand;
+            if(h!=null) {
+                 name = h.name;
+            }
+
+            CardModel card = new CardModel(product.getId(), product.getName(), product.image.sizes.IPhone.url,name,product.getPrice());
             card.setOnCardDismissedListener(onCardDismissedListener);
 
             adapter.add(card);
@@ -81,9 +90,14 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
         @Override
         public void onLike() {
             if (mCardContainer.isEmpty()) {
-                String categoryId = getIntent().getStringExtra(CAT_ID);
-                mActionsListener.loadProducts(categoryId, false);
+              //  String categoryId = getIntent().getStringExtra(CAT_ID);
+               // mActionsListener.loadProducts(categoryId, false);
+
             }
+           number_products++;
+            TextView products=   (TextView) findViewById(R.id.number_products);
+
+            products.setText(Integer.toString(number_products));
             Log.i("Swipe Card", "Right" + mCardContainer.isEmpty());
         }
 

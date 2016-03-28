@@ -44,35 +44,71 @@ public final class SimpleCardStackAdapter extends CardStackAdapter {
 
 	@Override
 	public View getCardView(int position, CardModel model, View convertView, ViewGroup parent) {
+//		if(convertView == null) {
+//			LayoutInflater inflater = LayoutInflater.from(getContext());
+//			convertView = inflater.inflate(R.layout.std_card_inner, parent, false);
+//			assert convertView != null;
+//		}
+//
+//		//((ImageView) convertView.findViewById(R.id.image)).setImageDrawable(model.getCardImageDrawable());
+//		ImageView imageView = ((ImageView) convertView.findViewById(R.id.image));
+//		//Picasso.with(getContext()).load(model.getCardImageDrawable()).into(imageView);
+//		//Glide.with(getContext()).load(model.getCardImageDrawable())
+//		Glide.with(getContext()).load(model.getCardImageDrawable())
+//				.placeholder(R.drawable.ic_launcher)
+//				.thumbnail(0.5f)
+//				.centerCrop()
+//				.crossFade()
+//				.diskCacheStrategy(DiskCacheStrategy.ALL)
+//						//	.diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//				.into(imageView);
+//
+//
+////
+////		((TextView) convertView.findViewById(R.id.title)).setText(model.getTitle());
+//		((TextView) convertView.findViewById(R.id.description)).setText("blablaaa");
+
+	//	final TextView like_dislike_text = ((TextView) convertView.findViewById(R.id.like_dislike_text));
+//		if(model.isLike())
+//			like_dislike_text.setText("Liked");
+//		else
+//			like_dislike_text.setText("DisLiked");
+
+
 		if(convertView == null) {
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 			convertView = inflater.inflate(R.layout.std_card_inner, parent, false);
 			assert convertView != null;
 		}
 
-		//((ImageView) convertView.findViewById(R.id.image)).setImageDrawable(model.getCardImageDrawable());
-		ImageView imageView = ((ImageView) convertView.findViewById(R.id.image));
+	//	((ImageView) convertView.findViewById(R.id.image)).setImageDrawable(model.getCardImageDrawable());
+				ImageView imageView = ((ImageView) convertView.findViewById(R.id.image));
 		//Picasso.with(getContext()).load(model.getCardImageDrawable()).into(imageView);
 		//Glide.with(getContext()).load(model.getCardImageDrawable())
 		Glide.with(getContext()).load(model.getCardImageDrawable())
 				.placeholder(R.drawable.ic_launcher)
-				.thumbnail(0.5f)
+				//.thumbnail(0.1f)
+				//.override(600, 600)
 				.centerCrop()
-				.crossFade()
+				//.crossFade()
 				.diskCacheStrategy(DiskCacheStrategy.ALL)
 						//	.diskCacheStrategy(DiskCacheStrategy.SOURCE)
 				.into(imageView);
 
 
 
-		((TextView) convertView.findViewById(R.id.title)).setText(model.getTitle());
+////
+//		((TextView) convertView.findViewById(R.id.title)).setText(model.getTitle());
 		((TextView) convertView.findViewById(R.id.description)).setText(model.getDescription());
-
-		final TextView like_dislike_text = ((TextView) convertView.findViewById(R.id.like_dislike_text));
+		((TextView) convertView.findViewById(R.id.description2)).setText(model.getBrand());
+		((TextView) convertView.findViewById(R.id.image_1)).setText(model.getPrice().toString());
+//
+//		final TextView like_dislike_text = ((TextView) convertView.findViewById(R.id.like_dislike_text));
 //		if(model.isLike())
 //			like_dislike_text.setText("Liked");
 //		else
 //			like_dislike_text.setText("DisLiked");
+
 
 		return convertView;
 	}

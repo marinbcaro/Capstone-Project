@@ -138,6 +138,36 @@ public class CardModel {
 
 	private String   title;
 	private String   description;
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	private String brand;
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	private Double price;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	private String name;
 	private String cardImageDrawable;
 	private Drawable cardLikeImageDrawable;
 	private Drawable cardDislikeImageDrawable;
@@ -164,7 +194,7 @@ public class CardModel {
     }
 
 	public CardModel() {
-		this(null, null, null);
+		this(null, null, null,null,null);
 	}
 
 //	public CardModel(String title, String description, Drawable cardImage) {
@@ -179,9 +209,11 @@ public class CardModel {
 //		this.cardImageDrawable = new BitmapDrawable(null, cardImage);
 //	}
 
-	public CardModel(String title, String description, String cardImage) {
+	public CardModel(String title, String description, String cardImage,String brand,Double price) {
 		this.title = title;
 		this.description = description;
+		this.brand=brand;
+		this.price=price;
 		this.cardImageDrawable = cardImage;
 	}
 
@@ -192,6 +224,7 @@ public class CardModel {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
 
 	public String getDescription() {
 		return description;

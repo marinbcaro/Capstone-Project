@@ -14,17 +14,17 @@ public final class Product {
 
     private final String name;
     private final String url;
-    private final Brand brand;
-    private final double price;
+    public final Brand brand;
+    private final Double price;
     public final Image image;
 
 
 
   public  class Brand {
-        String name;
-      public String getName() {
-          return name;
-      }
+     public   String name;
+     // public String getName() {
+        //  return name;
+   //   }
 
     }
 
@@ -35,11 +35,11 @@ public final class Product {
     }
 
     public class Sizes{
-      public IPhoneSmall IPhoneSmall;
+      public IPhone IPhone;
 
     }
 
-    public class IPhoneSmall{
+    public class IPhone{
       public   String url;
     }
 

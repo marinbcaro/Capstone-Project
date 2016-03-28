@@ -74,7 +74,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                     for (Product contributor : contributors) {
                         Brand h = contributor.getBrand();
                         Image ima = contributor.getImage();
-                        addProduct(contributor.getId(), contributor.getDescription(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
+                        addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
                     }
                     List<Product> products = new ArrayList<>(DATA.values());
                     callback.onLoaded(products);
