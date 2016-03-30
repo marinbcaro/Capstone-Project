@@ -26,23 +26,23 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
     private static final String BASE_URL = "/api/v2/products?pid=";
-
+   
     private static final String API_URL = BASE_URL + API_KEY;
-    private final static ArrayMap<String, Product> DATA = new ArrayMap(2);
+    private  ArrayMap<String, Product> DATA = new ArrayMap(2);
 
-    private static void addProduct(String id, String description, String name, String url, Brand brand, Double price, Image image) {
-        Product product = new Product(id, description, name, url, brand, price, image);
-
-        DATA.put(product.getId(), product);
-    }
+//    private static void addProduct(String id, String description, String name, String url, Brand brand, Double price, Image image) {
+//        Product product = new Product(id, description, name, url, brand, price, image);
+//
+//        DATA.put(product.getId(), product);
+//    }
 
     @Override
-    public void getProductsCategories(String catId, final ProductsServiceCallback callback) {
-        getData(catId, callback);
+    public void getProductsCategories(String catId, String search,final ProductsServiceCallback callback) {
+        getData(catId, search,callback);
     }
 
 
-    public void getData(String catId, final ProductsServiceCallback callback) {
+    public void getData(String catId, String search,final ProductsServiceCallback callback) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
@@ -62,19 +62,23 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
         shopStyleService mService = retrofit.create(shopStyleService.class);
 
-        Call<ListProducts> call = mService.listProducts(catId);
+        Call<ListProducts> call = mService.listProducts(catId,search);
         call.enqueue(new Callback<ListProducts>() {
             @Override
             public void onResponse(Call<ListProducts> call, Response<ListProducts> response) {
                 int statusCode = response.code();
 
                 if (response.isSuccess()) {
+                    DATA.clear();
 
                     List<Product> contributors = response.body().products;
                     for (Product contributor : contributors) {
                         Brand h = contributor.getBrand();
                         Image ima = contributor.getImage();
-                        addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
+                      //  addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
+                        Product product = new Product(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
+
+                        DATA.put(product.getId(), product);
                     }
                     List<Product> products = new ArrayList<>(DATA.values());
                     callback.onLoaded(products);
@@ -96,8 +100,8 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
 
     public interface shopStyleService {
-        @GET(API_URL + "&sort=Popular&limit=50")
-        Call<ListProducts> listProducts(@Query("cat") String catId);
+        @GET(API_URL + "&sort=Popular")
+        Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search );
     }
 
 

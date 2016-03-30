@@ -13,6 +13,6 @@ public interface ProductsRepository {
         void onProductsLoaded(List<Product> products);
 
     }
-    void getProducts(@NonNull String catId,@NonNull LoadProductsCallback callback);
+    void getProducts(@NonNull String catId,String search,@NonNull LoadProductsCallback callback);
     void refreshData();
 }

@@ -18,7 +18,7 @@ public interface ProductsContract {
 
     interface UserActionsListener {
 
-        void loadProducts(String catId,boolean forceUpdate);
+        void loadProducts(String catId,String search,boolean forceUpdate);
        // void showProducts(@NonNull Product requestedCategory );
 
     }

@@ -1,12 +1,19 @@
 package com.example.carolinamarin.stylestumble.products;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
@@ -18,6 +25,8 @@ import com.example.carolinamarin.swipecards.view.CardContainer;
 import com.example.carolinamarin.swipecards.view.SimpleCardStackAdapter;
 
 import java.util.List;
+
+
 
 public class ProductsActivity extends Activity implements ProductsContract.View {
     public static final String CAT_ID = "CAT_ID";
@@ -31,19 +40,72 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
         // Set up the toolbar.
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        ActionBar ab = getSupportActionBar();
-//        ab.setDisplayHomeAsUpEnabled(true);
-//        ab.setDisplayShowHomeEnabled(true);
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar);
+        setActionBar(toolbarTop);
         mCardContainer = (CardContainer) findViewById(R.id.layoutview);
+
         // Get the requested note id
         String categoryId = getIntent().getStringExtra(CAT_ID);
-        adapter = new SimpleCardStackAdapter(this);
-        mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
 
-        mActionsListener.loadProducts(categoryId, false);
 
+        Intent intent=getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //use the query to search your data somehow
+
+            adapter = new SimpleCardStackAdapter(this);
+            mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
+            mActionsListener.loadProducts(categoryId,query, true);
+        }else{
+            adapter = new SimpleCardStackAdapter(this);
+            mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
+
+            mActionsListener.loadProducts(categoryId,"", false);
+        }
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //use the query to search your data somehow
+
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_products, menu);
+
+        // Associate searchable configuration with the SearchView
+//        SearchManager searchManager =
+//                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView =
+//                (SearchView) menu.findItem(R.id.search).getActionView();
+//        searchView.setSearchableInfo(
+//                searchManager.getSearchableInfo(getComponentName()));
+
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+
+
+
+
+        return true;
     }
 
     @Override

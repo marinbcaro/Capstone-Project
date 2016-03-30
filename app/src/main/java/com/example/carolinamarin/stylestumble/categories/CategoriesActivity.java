@@ -21,6 +21,7 @@ public class CategoriesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
+
         setSupportActionBar(toolbarTop);
 
 
