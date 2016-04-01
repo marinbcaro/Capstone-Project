@@ -27,7 +27,7 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
 
 
     @Override
-    public void loadProducts(String catId,String search,boolean forceUpdate) {
+    public void loadProducts(String catId,String search,int offset,boolean forceUpdate) {
 
       //  mProductsView.setProgressIndicator(true);
         if (forceUpdate) {
@@ -38,7 +38,7 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
         // that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
 
-        mProductssRepository.getProducts(catId,search,new ProductsRepository.LoadProductsCallback() {
+        mProductssRepository.getProducts(catId,search,offset,new ProductsRepository.LoadProductsCallback() {
             @Override
             public void onProductsLoaded(List<Product> categories) {
                 EspressoIdlingResource.decrement(); // Set app as idle.

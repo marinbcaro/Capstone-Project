@@ -79,7 +79,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
     public void onResume() {
         super.onResume();
         String catId = getArguments().getString(ARGUMENT_CAT_ID);
-        mActionsListener.loadProducts(catId,"",false);
+        mActionsListener.loadProducts(catId,"",0,false);
     }
 
 

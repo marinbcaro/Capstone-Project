@@ -62,7 +62,7 @@ public final class SimpleCardStackAdapter extends CardStackAdapter {
 //				.diskCacheStrategy(DiskCacheStrategy.ALL)
 //						//	.diskCacheStrategy(DiskCacheStrategy.SOURCE)
 //				.into(imageView);
-//
+
 //
 ////
 ////		((TextView) convertView.findViewById(R.id.title)).setText(model.getTitle());

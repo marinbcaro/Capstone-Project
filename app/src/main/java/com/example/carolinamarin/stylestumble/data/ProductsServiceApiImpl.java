@@ -26,7 +26,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
     private static final String BASE_URL = "/api/v2/products?pid=";
-   
+
     private static final String API_URL = BASE_URL + API_KEY;
     private  ArrayMap<String, Product> DATA = new ArrayMap(2);
 
@@ -37,12 +37,12 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 //    }
 
     @Override
-    public void getProductsCategories(String catId, String search,final ProductsServiceCallback callback) {
-        getData(catId, search,callback);
+    public void getProductsCategories(String catId, String search,int offset,final ProductsServiceCallback callback) {
+        getData(catId, search,offset,callback);
     }
 
 
-    public void getData(String catId, String search,final ProductsServiceCallback callback) {
+    public void getData(String catId, String search,int offset,final ProductsServiceCallback callback) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
@@ -62,7 +62,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
         shopStyleService mService = retrofit.create(shopStyleService.class);
 
-        Call<ListProducts> call = mService.listProducts(catId,search);
+        Call<ListProducts> call = mService.listProducts(catId,search,offset);
         call.enqueue(new Callback<ListProducts>() {
             @Override
             public void onResponse(Call<ListProducts> call, Response<ListProducts> response) {
@@ -100,8 +100,8 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
 
     public interface shopStyleService {
-        @GET(API_URL + "&sort=Popular")
-        Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search );
+        @GET(API_URL + "&sort=Popular&limit=50")
+        Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search,@Query("offset") int offset );
     }
 
 

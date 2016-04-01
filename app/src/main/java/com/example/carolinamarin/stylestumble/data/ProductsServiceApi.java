@@ -11,5 +11,5 @@ public interface ProductsServiceApi {
         void onLoaded(T products);
     }
 
-    void getProductsCategories(String catId,String search,ProductsServiceCallback<List<Product>> callback);
+    void getProductsCategories(String catId,String search,int offset,ProductsServiceCallback<List<Product>> callback);
 }

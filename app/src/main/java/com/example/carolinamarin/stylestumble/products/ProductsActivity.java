@@ -2,15 +2,16 @@ package com.example.carolinamarin.stylestumble.products;
 
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -34,6 +35,8 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
     private SimpleCardStackAdapter adapter;
     private ProductsContract.UserActionsListener mActionsListener;
     private int number_products=0;
+    private int offset=0;
+    private String searchQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,22 +49,27 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
 
         // Get the requested note id
         String categoryId = getIntent().getStringExtra(CAT_ID);
+        adapter = new SimpleCardStackAdapter(this);
+        mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
+        mActionsListener.loadProducts(categoryId,"",offset, false);
 
-
-        Intent intent=getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to search your data somehow
-
-            adapter = new SimpleCardStackAdapter(this);
-            mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
-            mActionsListener.loadProducts(categoryId,query, true);
-        }else{
-            adapter = new SimpleCardStackAdapter(this);
-            mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
-
-            mActionsListener.loadProducts(categoryId,"", false);
-        }
+//        Intent intent=getIntent();
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            String query = intent.getStringExtra(SearchManager.QUERY);
+//            //use the query to search your data somehow
+//
+////            adapter = new SimpleCardStackAdapter(this);
+////            mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
+////            mActionsListener.loadProducts(categoryId,query, true);
+//
+//
+//          //  String categoryId = getIntent().getStringExtra(CAT_ID);
+//            mActionsListener.loadProducts("mens-clothes",query, false);
+//        }else{
+//
+//
+//            mActionsListener.loadProducts(categoryId,"", false);
+//        }
 
     }
 
@@ -85,6 +93,39 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_products, menu);
 
+      final  MenuItem  searchItem = menu.findItem(R.id.search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Fetch the data remotely
+              //  adapter = new SimpleCardStackAdapter(getApplicationContext());
+
+                 adapter = new SimpleCardStackAdapter(getApplicationContext());
+                searchQuery=query;
+              //
+              // mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), getApplicationContext());
+        mActionsListener.loadProducts("mens-clothes",query,offset, true);
+                // Reset SearchView
+                searchView.clearFocus();
+                searchView.setQuery("", false);
+                searchView.setIconified(true);
+                searchItem.collapseActionView();
+                // Set activity title to search query
+              //  BookListActivity.this.setTitle(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+
+
+
+
         // Associate searchable configuration with the SearchView
 //        SearchManager searchManager =
 //                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -93,13 +134,13 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
 //        searchView.setSearchableInfo(
 //                searchManager.getSearchableInfo(getComponentName()));
 
-
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
+//
+//        SearchManager searchManager =
+//                (SearchManager) getSystemService(getApplicationContext().SEARCH_SERVICE);
+//        SearchView searchView =
+//                (SearchView) menu.findItem(R.id.search).getActionView();
+//        searchView.setSearchableInfo(
+//                searchManager.getSearchableInfo(getComponentName()));
 
 
 
@@ -140,23 +181,26 @@ public class ProductsActivity extends Activity implements ProductsContract.View 
         mCardContainer.setAdapter(adapter);
     }
 
-    CardModel.OnClickListener onCardClickListener = new CardModel.OnClickListener() {
-        @Override
-        public void OnClickListener() {
-            Log.i("Swipeable Cards", "I am pressing the card" + adapter.getCount());
-
-        }
-    };
+//    CardModel.OnClickListener onCardClickListener = new CardModel.OnClickListener() {
+//        @Override
+//        public void OnClickListener() {
+//            Log.i("Swipeable Cards", "I am pressing the card" + adapter.getCount());
+//
+//        }
+//    };
 
     CardModel.OnCardDismissedListener onCardDismissedListener = new CardModel.OnCardDismissedListener() {
         @Override
         public void onLike() {
             if (mCardContainer.isEmpty()) {
-              //  String categoryId = getIntent().getStringExtra(CAT_ID);
-               // mActionsListener.loadProducts(categoryId, false);
+                String categoryId = getIntent().getStringExtra(CAT_ID);
+                offset++;
+                adapter = new SimpleCardStackAdapter(getApplicationContext());
+                mActionsListener.loadProducts(categoryId,searchQuery,offset, true);
+
 
             }
-           number_products++;
+         //  number_products++;
             TextView products=   (TextView) findViewById(R.id.number_products);
 
             products.setText(Integer.toString(number_products));
