@@ -27,29 +27,31 @@ android:background="@color/cardview_dark_background">
         android:textColor="#FFF" />
 
 
-    <!--<Button-->
+    <Button
 
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--android:layout_weight="1"-->
-        <!--android:background="@color/cardview_dark_background"-->
-        <!--android:drawableTop="@drawable/wishlist"-->
-        <!--android:text="Wish List"-->
-        <!--android:textAllCaps="false"-->
-        <!--android:textColor="#FFF" />-->
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/wishlist"/>
-    <TextView
-        android:id="@+id/number_products"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/cardview_dark_background"
+        android:drawableTop="@drawable/wishlist"
+        android:onClick="showWishList"
+        android:text="Wish List"
 
-        android:background="@drawable/textview_background"
-        android:padding="10dp"
-        android:text="10"/>
+        android:textAllCaps="false"
+        android:textColor="#FFF" />
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:src="@drawable/wishlist"/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/number_products"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="fill_parent"-->
+
+        <!--android:background="@drawable/textview_background"-->
+        <!--android:padding="10dp"-->
+        <!--android:text="10"/>-->
 
     <Button
 

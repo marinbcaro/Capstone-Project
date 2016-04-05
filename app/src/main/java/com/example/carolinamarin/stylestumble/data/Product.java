@@ -7,11 +7,8 @@ import android.support.annotation.Nullable;
  */
 public final class Product {
     private final String id;
-
     @Nullable
     private final String description;
-
-
     private final String name;
     private final String url;
     public final Brand brand;
@@ -35,11 +32,11 @@ public final class Product {
     }
 
     public class Sizes{
-      public IPhone IPhone;
+      public IPhoneSmall IPhoneSmall;
 
     }
 
-    public class IPhone{
+    public class IPhoneSmall{
       public   String url;
     }
 

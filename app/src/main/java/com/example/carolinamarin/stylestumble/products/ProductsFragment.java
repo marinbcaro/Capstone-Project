@@ -1,41 +1,74 @@
 package com.example.carolinamarin.stylestumble.products;
 
-import android.content.res.Resources;
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Product;
-import com.example.carolinamarin.swipecards.model.Orientations;
-import com.example.carolinamarin.swipecards.view.CardContainer;
-import com.example.carolinamarin.swipecards.view.SimpleCardStackAdapter;
+import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
+import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
+import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
+import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
+import com.example.carolinamarin.stylestumble.util.ItemTouchHelperViewHolder;
+import com.example.carolinamarin.stylestumble.util.SimpleItemTouchHelperCallback;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ProductsFragment extends Fragment implements ProductsContract.View  {
+public class ProductsFragment extends Fragment implements ProductsContract.View,LoaderManager.LoaderCallbacks<Cursor>  {
 
     public static final String ARGUMENT_CAT_ID = "CATEGORY_ID";
-    private CardContainer mCardContainer;
+    private static final int CURSOR_LOADER_ID = 0;
 
-    private ProductsContract.UserActionsListener mActionsListener;
+    private static ProductsContract.UserActionsListener mActionsListener;
 
     private TextView mDetailTitle;
 
     private TextView mDetailDescription;
 
     private ImageView mDetailImage;
-    private SimpleCardStackAdapter adapter;
+
+    private ItemTouchHelper mItemTouchHelper;
+    private ProductsAdapter mListAdapter;
+    private static String searchQuery;
+    private String category;
+    private static String cat_id;
+    private static int offset=0;
+    List<Product> mProducts;
 
     public static ProductsFragment newInstance(String categoryId) {
         Bundle arguments = new Bundle();
@@ -49,7 +82,10 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-          adapter = new SimpleCardStackAdapter(getContext());
+
+     //   mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
+        setHasOptionsMenu(true);
+      //    adapter = new SimpleCardStackAdapter(getContext());
 //        if (getArguments() != null) {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
@@ -75,174 +111,325 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
     }
 
 
+
     @Override
     public void onResume() {
         super.onResume();
-        String catId = getArguments().getString(ARGUMENT_CAT_ID);
-        mActionsListener.loadProducts(catId,"",0,false);
+//        String catId = getArguments().getString(ARGUMENT_CAT_ID);
+//        mActionsListener.loadProducts(catId, "", 0, false);
+        getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+
+
         mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), this);
+
+        Cursor c = getActivity().getContentResolver().query(ProductProvider.Products.PRODUCTS,
+                null, null, null, null);
+        Log.i("count", "cursor count: " + c.getCount());
+        if (c == null || c.getCount() == 0){
+            String catId = getArguments().getString(ARGUMENT_CAT_ID);
+            cat_id=catId;
+            mActionsListener.loadProducts(catId, "", 0, false);
+        }
+
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
+        super.onActivityCreated(savedInstanceState);
+         setRetainInstance(true);
+
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args){
+        return new CursorLoader(getActivity(), ProductProvider.Products.PRODUCTS,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+        mListAdapter.swapCursor(data);
 
 
     }
+
     @Override
+    public void onLoaderReset(Loader<Cursor> loader){
+        mListAdapter.swapCursor(null);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.menu_products, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Fetch the data remotely
+                //  adapter = new SimpleCardStackAdapter(getApplicationContext());
+
+                //    adapter = new SimpleCardStackAdapter(getApplicationContext());
+                searchQuery = query;
+                  String catId = getArguments().getString(ARGUMENT_CAT_ID);
+                // mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), getApplicationContext());
+                mActionsListener.loadProducts(catId, query, offset, true);
+                // Reset SearchView
+                searchView.clearFocus();
+                searchView.setQuery("", false);
+                searchView.setIconified(true);
+                searchItem.collapseActionView();
+                // Set activity title to search query
+                //  BookListActivity.this.setTitle(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+
+    }
+
+
+
+
+        @Override
     public void showProducts(List<Product> products){
       //  mCategoryAdapter.replaceData(categories);
 
-//
-// Log.d("products####",categories.get(0).name);
-//
-
-        Resources r = getResources();
 
 
-//        ArrayList arra=new ArrayList();
-//        arra.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//
-//        for (Product product : products) {
-//           // addProduct(product.getId(), product.getmDescription(),product.getName(),product.getUrl(),product.getBrand(),product.getPrice());
-//            adapter.add(new CardModel(product.getId(), product.getDescription(), r.getDrawable(R.drawable.picture1)));
-//        }
+                ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(products.size());
+
+                for (Product product : products){
+                    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                            ProductProvider.Products.PRODUCTS);
+                    builder.withValue(ProductColumns.NAME, product.getName());
+                    builder.withValue(ProductColumns.DESCRIPTION, product.getDescription());
+                    if(product.getBrand()!=null){
+                        builder.withValue(ProductColumns.BRAND, product.getBrand().name);}
+                    builder.withValue(ProductColumns.PRICE, product.getPrice());
+                    builder.withValue(ProductColumns.URL, product.getImage().sizes.IPhoneSmall.url);
+                    batchOperations.add(builder.build());
+                }
+
+                try{
+                    getActivity().getContentResolver().applyBatch(ProductProvider.AUTHORITY, batchOperations);
+                } catch(RemoteException | OperationApplicationException e){
+                    Log.e("ERROR Provider", "Error applying batch insert", e);
+                }
 
 
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
 
-//        CardModel cardModel = new CardModel("Title1", "Description goes here","123");
-//        cardModel.setOnClickListener(new CardModel.OnClickListener() {
-//            @Override
-//            public void OnClickListener() {
-//                Log.i("Swipeable Cards", "I am pressing the card");
-//            }
-//        });
-//
-//        cardModel.setOnCardDismissedListener(new CardModel.OnCardDismissedListener() {
-//            @Override
-//            public void onLike() {
-//                Log.i("Swipeable Cards", "I like the card");
-//
-//            }
-//
-//            @Override
-//            public void onDislike() {
-//                Log.i("Swipeable Cards", "I dislike the card");
-//            }
-//        });
+         //   mListAdapter.replaceData(products);
 
-    //    adapter.add(cardModel);
-
-    //    if(adapter!=null) {
-            mCardContainer.setAdapter(adapter);
-     //   }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View root = inflater.inflate(R.layout.fragment_products, container, false);
-//        mDetailTitle = (TextView) root.findViewById(R.id.note_detail_title);
-//        mDetailDescription = (TextView) root.findViewById(R.id.note_detail_description);
-//        mDetailImage = (ImageView) root.findViewById(R.id.note_detail_image);
+        RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_list);
 
-        Resources r = getResources();
+        mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
+        recyclerView.setAdapter(mListAdapter);
 
-
-//        ArrayList arra=new ArrayList();
-//        arra.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title6", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title2", "Description goes here", r.getDrawable(R.drawable.picture2)));
-//        adapter.add(new CardModel("Title3", "Description goes here", r.getDrawable(R.drawable.picture3)));
-//        adapter.add(new CardModel("Title4", "Description goes here", r.getDrawable(R.drawable.picture1)));
-//        adapter.add(new CardModel("Title5", "Description goes here", r.getDrawable(R.drawable.picture2)));
-
-        mCardContainer = (CardContainer) root.findViewById(R.id.layoutview);
-        mCardContainer.setOrientation(Orientations.Orientation.Ordered);
+      //  recyclerView.setAdapter(mListAdapter);
 
 
-//        CardModel cardModel = new CardModel("Title1", "Description goes here", r.getDrawable(R.drawable.picture1));
-//        cardModel.setOnClickListener(new CardModel.OnClickListener() {
-//            @Override
-//            public void OnClickListener() {
-//                Log.i("Swipeable Cards", "I am pressing the card");
-//            }
-//        });
-//
-//        cardModel.setOnCardDismissedListener(new CardModel.OnCardDismissedListener() {
-//            @Override
-//            public void onLike() {
-//                Log.i("Swipeable Cards", "I like the card");
-//
-//            }
-//
-//            @Override
-//            public void onDislike() {
-//                Log.i("Swipeable Cards", "I dislike the card");
-//            }
-//        });
-//
-//        adapter.add(cardModel);
-//
-//        if(adapter!=null) {
-//            mCardContainer.setAdapter(adapter);
-//        }
+        int numColumns = 1;
+
+        // recyclerView.setHasFixedSize(true);
+        //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
+        SwipeRefreshLayout swipeRefreshLayout =
+                (SwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
+        swipeRefreshLayout.setColorSchemeColors(
+                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
+                ContextCompat.getColor(getActivity(), R.color.colorAccent),
+                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                String catId = getArguments().getString(ARGUMENT_CAT_ID);
+                offset++;
+                int totalPages = offset * 50;
+                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
+            }
+        });
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+
         return root;
+
     }
+    ProductItemListener mItemListener = new ProductItemListener() {
+//        @Override
+//        public void onNoteClick(Note clickedNote) {
+//            mActionsListener.openNoteDetails(clickedNote);
+//        }
+    };
+
+   // private static class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+   private static class ProductsAdapter extends CursorRecyclerViewAdapter<ProductsAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+        private List<Product> mProducts;
+        private ProductItemListener mItemListener;
+       private Context mContext;
+       ViewHolder mVh;
+
+        public ProductsAdapter(Context context,Cursor cursor,List<Product> products, ProductItemListener itemListener) {
+            super(context, cursor);
+           // setList(products);
+            mContext=context;
+            mItemListener = itemListener;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            Context context = parent.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View noteView = inflater.inflate(R.layout.item_product, parent, false);
+
+
+            ViewHolder vh = new ViewHolder(noteView,mItemListener);
+            mVh = vh;
+            return vh;
+        }
+
+//        @Override
+//        public void onBindViewHolder(ViewHolder viewHolder, int position) {
+//            Product note = mProducts.get(position);
+//
+//            viewHolder.title.setText(note.getName());
+//          //  viewHolder.description.setText(note.getDescription());
+//
+//            Glide.with(viewHolder.itemView.getContext()).load(note.getImage().sizes.IPhoneSmall.url)
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(viewHolder.image);
+//
+//        }
+
+       @Override
+       public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor){
+        //   DatabaseUtils.dumpCursor(cursor);
+           viewHolder.title.setText(cursor.getString(
+                   cursor.getColumnIndex(ProductColumns.NAME)));
+
+        //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
+
+//Log.d("URL",cursor.getString(
+//        cursor.getColumnIndex(ProductColumns.URL)));
+                    Glide.with(viewHolder.itemView.getContext()).load(cursor.getString(
+                            cursor.getColumnIndex(ProductColumns.URL)))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(viewHolder.image);
+
+
+       }
+
+        public void replaceData(List<Product> notes) {
+            setList(notes);
+            notifyDataSetChanged();
+        }
+
+        private void setList(List<Product> notes) {
+            mProducts = checkNotNull(notes);
+        }
+
+//        @Override
+//        public int getItemCount() {
+//            return mProducts.size();
+//        }
+
+        public Product getItem(int position) {
+            return mProducts.get(position);
+        }
+
+        public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,ItemTouchHelperViewHolder {
+
+            public TextView title;
+
+            public TextView description;
+            private ProductItemListener mItemListener;
+            private ImageView image;
+
+            public ViewHolder(View view, ProductItemListener listener) {
+                super(view);
+                mItemListener = listener;
+                title = (TextView) view.findViewById(R.id.product_detail_title);
+          //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
+
+                image=(ImageView)view.findViewById(R.id.product_image);
+             //   itemView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View v) {
+                int position = getAdapterPosition();
+           //     Product note = getItem(position);
+              ///  mItemListener.onNoteClick(note);
+
+            }
+
+            @Override
+            public void onItemSelected() {
+             //   itemView.setBackgroundColor(Color.LTGRAY);
+            }
+
+            @Override
+            public void onItemClear() {
+             //   itemView.setBackgroundColor(0);
+            }
+        }
+        @Override
+        public void onItemDismiss(int position) {
+            long cursorId = getItemId(position);
+            Cursor c = getCursor();
+            ContentValues cv = new ContentValues();
+//            cv.put(ArchivedPlanetColumns.NAME,
+//                    c.getString(c.getColumnIndex(PlanetColumns.NAME)));
+//            cv.put(ArchivedPlanetColumns.DIST_FROM_SUN,
+//                    c.getDouble(c.getColumnIndex(PlanetColumns.DIST_FROM_SUN)));
+//            cv.put(ArchivedPlanetColumns.IMAGE_RESOURCE,
+//                    c.getInt(c.getColumnIndex(PlanetColumns.IMAGE_RESOURCE)));
+
+
+            mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+                    null, null);
+
+            notifyItemRemoved(position);
+
+            if(c.getCount()==1){
+                String catId =cat_id;
+                offset++;
+                int totalPages = offset * 50;
+                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
+            }
+
+        }
+    }
+
+    public interface ProductItemListener {
+
+       // void onNoteClick(Note clickedNote);
+    }
+
+
 }

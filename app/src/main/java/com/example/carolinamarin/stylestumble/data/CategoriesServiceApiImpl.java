@@ -15,7 +15,7 @@ public class CategoriesServiceApiImpl  implements CategoriesServiceApi{
 
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
     private static final String BASE_URL = "/api/v2/categories?pid=";
-   
+    private static final String API_KEY = "uid9049-30800243-85";
     private static final String API_URL = BASE_URL + API_KEY;
 
 

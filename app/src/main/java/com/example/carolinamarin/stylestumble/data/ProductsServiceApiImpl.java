@@ -26,7 +26,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
     private static final String BASE_URL = "/api/v2/products?pid=";
-
+    private static final String API_KEY = "uid9049-30800243-85";
     private static final String API_URL = BASE_URL + API_KEY;
     private  ArrayMap<String, Product> DATA = new ArrayMap(2);
 
@@ -100,7 +100,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
 
     public interface shopStyleService {
-        @GET(API_URL + "&sort=Popular&limit=50")
+        @GET(API_URL + "&sort=Popular&limit=10")
         Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search,@Query("offset") int offset );
     }
 

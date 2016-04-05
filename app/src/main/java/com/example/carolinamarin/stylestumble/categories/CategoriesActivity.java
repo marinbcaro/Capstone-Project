@@ -1,7 +1,6 @@
 package com.example.carolinamarin.stylestumble.categories;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,10 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-//import com.example.carolinamarin.stylestumble.categories.Injection;
 
 import com.example.carolinamarin.stylestumble.R;
+
+//import com.example.carolinamarin.stylestumble.categories.Injection;
 
 public class CategoriesActivity extends AppCompatActivity {
     private CategoriesContract.UserActionsListener mCategoriesListener;
@@ -46,13 +45,6 @@ public class CategoriesActivity extends AppCompatActivity {
 
 
       //  mCategoriesListener = new CategoriesPresenter(Injection.provideCategoriesRepository(), this);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //mCategoriesListener.showProducts();
-            }
-        });
 
         if (null == savedInstanceState) {
             initFragment(CategoriesFragment.newInstance());

@@ -29,7 +29,7 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
     @Override
     public void loadProducts(String catId,String search,int offset,boolean forceUpdate) {
 
-      //  mProductsView.setProgressIndicator(true);
+        mProductsView.setProgressIndicator(true);
         if (forceUpdate) {
             mProductssRepository.refreshData();
         }
@@ -42,7 +42,7 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
             @Override
             public void onProductsLoaded(List<Product> categories) {
                 EspressoIdlingResource.decrement(); // Set app as idle.
-               // mProductsView.setProgressIndicator(false);
+                mProductsView.setProgressIndicator(false);
                 mProductsView.showProducts(categories);
             }
         });
