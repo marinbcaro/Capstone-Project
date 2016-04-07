@@ -63,7 +63,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
 
 
-        Cursor c = getActivity().getContentResolver().query(ProductProvider.Products.PRODUCTS,
+        Cursor c = getActivity().getContentResolver().query(ProductProvider.WishList.WISHLIST,
                 null, null, null, null);
         Log.i("count", "cursor count: " + c.getCount());
 
@@ -78,7 +78,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
-        return new CursorLoader(getActivity(), ProductProvider.Products.PRODUCTS,
+        return new CursorLoader(getActivity(), ProductProvider.WishList.WISHLIST,
                 null,
                 null,
                 null,
@@ -126,22 +126,6 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
-//        SwipeRefreshLayout swipeRefreshLayout =
-//                (SwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
-//        swipeRefreshLayout.setColorSchemeColors(
-//                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
-//                ContextCompat.getColor(getActivity(), R.color.colorAccent),
-//                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                String catId = getArguments().getString(ARGUMENT_CAT_ID);
-//                offset++;
-//                int totalPages = offset * 50;
-//                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
-//            }
-//        });
-
 
         return root;
 
@@ -162,13 +146,18 @@ public class WishListFragment extends Fragment implements WishListContract.View,
             mContext = context;
         }
 
+
+
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             Context context = parent.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
-            View categoryView = inflater.inflate(R.layout.item_note, parent, false);
+            View wishListView = inflater.inflate(R.layout.item_wishlist, parent, false);
 
-            return new ViewHolder(categoryView);
+            ViewHolder vh = new ViewHolder(wishListView);
+            mVh = vh;
+            return vh;
         }
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor){
@@ -185,11 +174,11 @@ public class WishListFragment extends Fragment implements WishListContract.View,
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(viewHolder.image);
 
-
         }
 
         @Override
-        public void onItemDismiss(int position) {
+        public void onItemDismiss(int position,int dir) {
+
             long cursorId = getItemId(position);
             Cursor c = getCursor();
             ContentValues cv = new ContentValues();
@@ -201,7 +190,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //                    c.getInt(c.getColumnIndex(PlanetColumns.IMAGE_RESOURCE)));
 
 
-            mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+            mContext.getContentResolver().delete(ProductProvider.WishList.withId(cursorId),
                     null, null);
 
             notifyItemRemoved(position);
@@ -214,13 +203,14 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //            }
 
         }
-        @Override
-        public void onBindViewHolder(ViewHolder viewHolder, int position) {
-            Category category = mCategories.get(position);
+//        @Override
+//        public void onBindViewHolder(ViewHolder viewHolder, int position) {
+//
+//
+//            viewHolder.title.setText(category.getDescription());
+//            viewHolder.description.setText(category.getDescription());
+//        }
 
-            viewHolder.title.setText(category.getDescription());
-            viewHolder.description.setText(category.getDescription());
-        }
 
 
 
@@ -228,10 +218,10 @@ public class WishListFragment extends Fragment implements WishListContract.View,
             mCategories = checkNotNull(categories);
         }
 
-        @Override
-        public int getItemCount() {
-            return mCategories.size();
-        }
+//        @Override
+//        public int getItemCount() {
+//         //   return mCategories.size();
+//        }
 
 
 

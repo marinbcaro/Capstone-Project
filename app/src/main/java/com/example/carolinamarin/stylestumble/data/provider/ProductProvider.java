@@ -41,8 +41,25 @@ public class ProductProvider {
 
             return buildUri("products", String.valueOf(id));
         }
-
-
     }
+
+    @TableEndpoint(table = ProductDatabase.WISHLIST)
+    public static class WishList{
+        @ContentUri(
+                path = "wishlist",
+                type = "vnd.android.cursor.dir/wishlist")
+        public static final Uri WISHLIST = buildUri("wishlist");
+
+        @InexactContentUri(
+                name = "WISHLIST_ID",
+                path = "wishlist/#",
+                type = "vnd.android.cursor.item/wishlist",
+                whereColumn = WishListColumns._ID,
+                pathSegment = 1)
+        public static Uri withId(long id){
+            return buildUri("wishlist", String.valueOf(id));
+        }
+    }
+
 
 }

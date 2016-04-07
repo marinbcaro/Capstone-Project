@@ -36,6 +36,7 @@ import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Product;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
+import com.example.carolinamarin.stylestumble.data.provider.WishListColumns;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperViewHolder;
@@ -129,14 +130,22 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
         Cursor c = getActivity().getContentResolver().query(ProductProvider.Products.PRODUCTS,
                 null, null, null, null);
+        String catId = getArguments().getString(ARGUMENT_CAT_ID);
         Log.i("count", "cursor count: " + c.getCount());
         if (c == null || c.getCount() == 0){
-            String catId = getArguments().getString(ARGUMENT_CAT_ID);
+
             cat_id=catId;
             mActionsListener.loadProducts(catId, "", 0, false);
+            getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        }else{
+
+           getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
+                   null, null);
+            mActionsListener.loadProducts(catId, searchQuery, 0, true);
+            getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
         }
 
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
 
         super.onActivityCreated(savedInstanceState);
          setRetainInstance(true);
@@ -182,6 +191,8 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 searchQuery = query;
                   String catId = getArguments().getString(ARGUMENT_CAT_ID);
                 // mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), getApplicationContext());
+                getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
+                        null, null);
                 mActionsListener.loadProducts(catId, query, offset, true);
                 // Reset SearchView
                 searchView.clearFocus();
@@ -274,7 +285,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             }
         });
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mListAdapter);
+
         mItemTouchHelper = new ItemTouchHelper(callback);
+
         mItemTouchHelper.attachToRecyclerView(recyclerView);
 
         return root;
@@ -398,21 +411,42 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
              //   itemView.setBackgroundColor(0);
             }
         }
+
+
         @Override
-        public void onItemDismiss(int position) {
+        public void onItemDismiss(int position,int orientation) {
             long cursorId = getItemId(position);
             Cursor c = getCursor();
             ContentValues cv = new ContentValues();
-//            cv.put(ArchivedPlanetColumns.NAME,
-//                    c.getString(c.getColumnIndex(PlanetColumns.NAME)));
-//            cv.put(ArchivedPlanetColumns.DIST_FROM_SUN,
-//                    c.getDouble(c.getColumnIndex(PlanetColumns.DIST_FROM_SUN)));
-//            cv.put(ArchivedPlanetColumns.IMAGE_RESOURCE,
-//                    c.getInt(c.getColumnIndex(PlanetColumns.IMAGE_RESOURCE)));
 
 
-            mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
-                    null, null);
+            if(orientation==32) {
+
+
+                cv.put(WishListColumns.NAME,
+                        c.getString(c.getColumnIndex(ProductColumns.NAME)));
+
+                cv.put(WishListColumns.DESCRIPTION,
+                        c.getString(c.getColumnIndex(ProductColumns.DESCRIPTION)));
+
+                cv.put(WishListColumns.BRAND,
+                        c.getString(c.getColumnIndex(ProductColumns.BRAND)));
+
+                cv.put(WishListColumns.PRICE,
+                        c.getString(c.getColumnIndex(ProductColumns.PRICE)));
+
+                cv.put(WishListColumns.URL,
+                        c.getString(c.getColumnIndex(ProductColumns.URL)));
+                mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+                        null, null);
+                mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
+                        cv);
+            }else{
+                mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+                        null, null);
+            }
+
+
 
             notifyItemRemoved(position);
 
