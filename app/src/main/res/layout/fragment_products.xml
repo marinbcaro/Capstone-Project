@@ -4,6 +4,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <!--<android.support.v7.widget.AppCompatTextView-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:text="hiiii"-->
+        <!--/>-->
 
 <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
     <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
@@ -18,18 +23,29 @@
         <!--android:layout_weight="1"-->
         <!--/>-->
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/products_list"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-     />
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/products_list"-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+     <!--/>-->
 <!--</LinearLayout>-->
 
 
 
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/dummyfrag_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_material_light">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/products_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-
+    </FrameLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
+
+

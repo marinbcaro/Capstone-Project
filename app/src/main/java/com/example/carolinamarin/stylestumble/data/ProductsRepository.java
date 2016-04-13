@@ -14,5 +14,13 @@ public interface ProductsRepository {
 
     }
     void getProducts(@NonNull String catId,String search,int offset,@NonNull LoadProductsCallback callback);
+
+    interface GetProductCallback{
+
+        void onProductLoaded(Product product);
+
+    }
+    void getProduct(@NonNull String productId,@NonNull GetProductCallback callback);
+
     void refreshData();
 }

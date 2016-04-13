@@ -3,6 +3,7 @@ package com.example.carolinamarin.stylestumble.products;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import com.example.carolinamarin.stylestumble.data.Product;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
 import com.example.carolinamarin.stylestumble.data.provider.WishListColumns;
+import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperViewHolder;
@@ -50,7 +52,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ProductsFragment extends Fragment implements ProductsContract.View,LoaderManager.LoaderCallbacks<Cursor>  {
+public class ProductsFragment extends Fragment implements ProductsContract.View, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARGUMENT_CAT_ID = "CATEGORY_ID";
     private static final int CURSOR_LOADER_ID = 0;
@@ -68,8 +70,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
     private static String searchQuery;
     private String category;
     private static String cat_id;
-    private static int offset=0;
+    private static int offset = 0;
     List<Product> mProducts;
+    public static final String ARG_OBJECT = "object";
 
     public static ProductsFragment newInstance(String categoryId) {
         Bundle arguments = new Bundle();
@@ -84,13 +87,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-     //   mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
+        //   mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
         setHasOptionsMenu(true);
-      //    adapter = new SimpleCardStackAdapter(getContext());
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
+
     }
 
     @Override
@@ -112,7 +111,6 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
     }
 
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -132,28 +130,29 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 null, null, null, null);
         String catId = getArguments().getString(ARGUMENT_CAT_ID);
         Log.i("count", "cursor count: " + c.getCount());
-        if (c == null || c.getCount() == 0){
-
-            cat_id=catId;
-            mActionsListener.loadProducts(catId, "", 0, false);
-            getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-        }else{
-
-           getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
-                   null, null);
-            mActionsListener.loadProducts(catId, searchQuery, 0, true);
-            getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        if (c == null || c.getCount() == 0) {
+            if (savedInstanceState == null) {
+                cat_id = catId;
+                mActionsListener.loadProducts(catId, "", 0, false);
+                getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+            }
+        } else {
+            if (savedInstanceState == null) {
+                getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
+                        null, null);
+                mActionsListener.loadProducts(catId, searchQuery, 0, true);
+                getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+            }
         }
 
 
-
         super.onActivityCreated(savedInstanceState);
-         setRetainInstance(true);
+        setRetainInstance(true);
 
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), ProductProvider.Products.PRODUCTS,
                 null,
                 null,
@@ -162,14 +161,14 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mListAdapter.swapCursor(data);
 
 
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader){
+    public void onLoaderReset(Loader<Cursor> loader) {
         mListAdapter.swapCursor(null);
     }
 
@@ -189,7 +188,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
                 //    adapter = new SimpleCardStackAdapter(getApplicationContext());
                 searchQuery = query;
-                  String catId = getArguments().getString(ARGUMENT_CAT_ID);
+                String catId = getArguments().getString(ARGUMENT_CAT_ID);
                 // mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), getApplicationContext());
                 getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
                         null, null);
@@ -213,38 +212,37 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     }
 
+    @Override
+    public void showDetailProduct(String productId) {
+        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
+        intent.putExtra(ProductDetailActivity.PRODUCT_ID, productId);
+        startActivity(intent);
+    }
 
 
-
-        @Override
-    public void showProducts(List<Product> products){
-      //  mCategoryAdapter.replaceData(categories);
-
+    @Override
+    public void showProducts(List<Product> products) {
+        ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(products.size());
 
 
-                ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(products.size());
+        for (Product product : products) {
+            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                    ProductProvider.Products.PRODUCTS);
+            builder.withValue(ProductColumns.NAME, product.getName());
+            builder.withValue(ProductColumns.DESCRIPTION, product.getDescription());
+            if (product.getBrand() != null) {
+                builder.withValue(ProductColumns.BRAND, product.getBrand().name);
+            }
+            builder.withValue(ProductColumns.PRICE, product.getPrice());
+            builder.withValue(ProductColumns.URL, product.getImage().sizes.IPhoneSmall.url);
+            batchOperations.add(builder.build());
+        }
 
-                for (Product product : products){
-                    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                            ProductProvider.Products.PRODUCTS);
-                    builder.withValue(ProductColumns.NAME, product.getName());
-                    builder.withValue(ProductColumns.DESCRIPTION, product.getDescription());
-                    if(product.getBrand()!=null){
-                        builder.withValue(ProductColumns.BRAND, product.getBrand().name);}
-                    builder.withValue(ProductColumns.PRICE, product.getPrice());
-                    builder.withValue(ProductColumns.URL, product.getImage().sizes.IPhoneSmall.url);
-                    batchOperations.add(builder.build());
-                }
-
-                try{
-                    getActivity().getContentResolver().applyBatch(ProductProvider.AUTHORITY, batchOperations);
-                } catch(RemoteException | OperationApplicationException e){
-                    Log.e("ERROR Provider", "Error applying batch insert", e);
-                }
-
-
-
-         //   mListAdapter.replaceData(products);
+        try {
+            getActivity().getContentResolver().applyBatch(ProductProvider.AUTHORITY, batchOperations);
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e("ERROR Provider", "Error applying batch insert", e);
+        }
 
     }
 
@@ -256,10 +254,10 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         View root = inflater.inflate(R.layout.fragment_products, container, false);
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_list);
 
-        mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
+        mListAdapter = new ProductsAdapter(getActivity(), null, new ArrayList<Product>(0), mItemListener);
         recyclerView.setAdapter(mListAdapter);
 
-      //  recyclerView.setAdapter(mListAdapter);
+        //  recyclerView.setAdapter(mListAdapter);
 
 
         int numColumns = 1;
@@ -293,24 +291,25 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         return root;
 
     }
+
     ProductItemListener mItemListener = new ProductItemListener() {
-//        @Override
-//        public void onNoteClick(Note clickedNote) {
-//            mActionsListener.openNoteDetails(clickedNote);
-//        }
+        @Override
+        public void onProductClick(Product clickedProduct) {
+            mActionsListener.openProductDetails(clickedProduct);
+        }
     };
 
-   // private static class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> implements ItemTouchHelperAdapter {
-   private static class ProductsAdapter extends CursorRecyclerViewAdapter<ProductsAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+    // private static class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+    private static class ProductsAdapter extends CursorRecyclerViewAdapter<ProductsAdapter.ViewHolder> implements ItemTouchHelperAdapter {
         private List<Product> mProducts;
         private ProductItemListener mItemListener;
-       private Context mContext;
-       ViewHolder mVh;
+        private Context mContext;
+        ViewHolder mVh;
 
-        public ProductsAdapter(Context context,Cursor cursor,List<Product> products, ProductItemListener itemListener) {
+        public ProductsAdapter(Context context, Cursor cursor, List<Product> products, ProductItemListener itemListener) {
             super(context, cursor);
-           // setList(products);
-            mContext=context;
+             setList(products);
+            mContext = context;
             mItemListener = itemListener;
         }
 
@@ -321,49 +320,32 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             View noteView = inflater.inflate(R.layout.item_product, parent, false);
 
 
-            ViewHolder vh = new ViewHolder(noteView,mItemListener);
+            ViewHolder vh = new ViewHolder(noteView, mItemListener);
             mVh = vh;
             return vh;
         }
 
-//        @Override
-//        public void onBindViewHolder(ViewHolder viewHolder, int position) {
-//            Product note = mProducts.get(position);
-//
-//            viewHolder.title.setText(note.getName());
-//          //  viewHolder.description.setText(note.getDescription());
-//
-//            Glide.with(viewHolder.itemView.getContext()).load(note.getImage().sizes.IPhoneSmall.url)
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .into(viewHolder.image);
-//
-//        }
+        @Override
+        public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
+            //   DatabaseUtils.dumpCursor(cursor);
+            viewHolder.title.setText(cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.NAME)));
 
-       @Override
-       public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor){
-        //   DatabaseUtils.dumpCursor(cursor);
-           viewHolder.title.setText(cursor.getString(
-                   cursor.getColumnIndex(ProductColumns.NAME)));
-
-        //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
-
-//Log.d("URL",cursor.getString(
-//        cursor.getColumnIndex(ProductColumns.URL)));
-                    Glide.with(viewHolder.itemView.getContext()).load(cursor.getString(
-                            cursor.getColumnIndex(ProductColumns.URL)))
+            Glide.with(viewHolder.itemView.getContext()).load(cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.URL)))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(viewHolder.image);
 
 
-       }
+        }
 
         public void replaceData(List<Product> notes) {
             setList(notes);
             notifyDataSetChanged();
         }
 
-        private void setList(List<Product> notes) {
-            mProducts = checkNotNull(notes);
+        private void setList(List<Product> products) {
+            mProducts = checkNotNull(products);
         }
 
 //        @Override
@@ -375,7 +357,8 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             return mProducts.get(position);
         }
 
-        public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,ItemTouchHelperViewHolder {
+
+        public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ItemTouchHelperViewHolder {
 
             public TextView title;
 
@@ -387,40 +370,46 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 super(view);
                 mItemListener = listener;
                 title = (TextView) view.findViewById(R.id.product_detail_title);
-          //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
+                //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
-                image=(ImageView)view.findViewById(R.id.product_image);
-             //   itemView.setOnClickListener(this);
+                image = (ImageView) view.findViewById(R.id.product_image);
+                itemView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
-                int position = getAdapterPosition();
-           //     Product note = getItem(position);
-              ///  mItemListener.onNoteClick(note);
+//                int pos=(Integer) v.getTag();
+//                long cursorId = getItemId(pos);
+//                Cursor c = getCursor();
+//                ContentValues cv = new ContentValues();
+//               // int position = getAdapterPosition();
+//                Cursor cursor=getCursor();
+//                int position=cursor.getPosition();
+//          //      Product product = getItem(position);
+//                mItemListener.onProductClick(product);
 
             }
 
             @Override
             public void onItemSelected() {
-             //   itemView.setBackgroundColor(Color.LTGRAY);
+               //    itemView.setBackgroundColor(Color.LTGRAY);
             }
 
             @Override
             public void onItemClear() {
-             //   itemView.setBackgroundColor(0);
+                //   itemView.setBackgroundColor(0);
             }
         }
 
 
         @Override
-        public void onItemDismiss(int position,int orientation) {
+        public void onItemDismiss(int position, int orientation) {
             long cursorId = getItemId(position);
             Cursor c = getCursor();
             ContentValues cv = new ContentValues();
 
 
-            if(orientation==32) {
+            if (orientation == 32) {
 
 
                 cv.put(WishListColumns.NAME,
@@ -441,17 +430,16 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                         null, null);
                 mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
                         cv);
-            }else{
+            } else {
                 mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
                         null, null);
             }
 
 
-
             notifyItemRemoved(position);
 
-            if(c.getCount()==1){
-                String catId =cat_id;
+            if (c.getCount() == 1) {
+                String catId = cat_id;
                 offset++;
                 int totalPages = offset * 50;
                 mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
@@ -462,7 +450,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     public interface ProductItemListener {
 
-       // void onNoteClick(Note clickedNote);
+         void onProductClick(Product clickedProduct);
     }
 
 

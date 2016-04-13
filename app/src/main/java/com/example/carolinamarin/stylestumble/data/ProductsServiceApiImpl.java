@@ -17,6 +17,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -42,6 +43,58 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
     }
 
 
+    @Override
+    public void getProduct(final String productId, final GetProductServiceCallback callback) {
+        //TODO: Add network latency here too.
+
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                Log.d("MyTAG", "OkHttp: " + message);
+            }
+        });
+        OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(httpClient)
+                .baseUrl("http://api.shopstyle.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+
+        ShopStyleService mService = retrofit.create(ShopStyleService.class);
+
+        Call<Product> call = mService.getProduct(productId);
+        call.enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                int statusCode = response.code();
+
+                if (response.isSuccess()) {
+                    DATA.clear();
+
+                    Product productInfo = response.body();
+
+                    callback.onProductLoaded(productInfo);
+
+                } else {
+                    Log.d("TOTAL ERROR", response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                // Log error here since request failed
+                Log.d("Error", t.getMessage());
+            }
+        });
+
+    }
+
+
     public void getData(String catId, String search,int offset,final ProductsServiceCallback callback) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
@@ -60,7 +113,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                 .build();
 
 
-        shopStyleService mService = retrofit.create(shopStyleService.class);
+        ShopStyleService mService = retrofit.create(ShopStyleService.class);
 
         Call<ListProducts> call = mService.listProducts(catId,search,offset);
         call.enqueue(new Callback<ListProducts>() {
@@ -99,9 +152,12 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
     }
 
 
-    public interface shopStyleService {
+    public interface ShopStyleService {
         @GET(API_URL + "&sort=Popular&limit=10")
         Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search,@Query("offset") int offset );
+
+        @GET(API_URL + "/{id}")
+        Call<Product> getProduct(@Path("id") String id);
     }
 
 

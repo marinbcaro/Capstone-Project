@@ -12,4 +12,11 @@ public interface ProductsServiceApi {
     }
 
     void getProductsCategories(String catId,String search,int offset,ProductsServiceCallback<List<Product>> callback);
+
+    interface GetProductServiceCallback<T> {
+
+        void onProductLoaded(T product);
+    }
+
+    void getProduct(String productId,GetProductServiceCallback<Product> callback);
 }

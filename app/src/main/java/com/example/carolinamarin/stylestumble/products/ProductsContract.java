@@ -1,5 +1,7 @@
 package com.example.carolinamarin.stylestumble.products;
 
+import android.support.annotation.NonNull;
+
 import com.example.carolinamarin.stylestumble.data.Product;
 
 import java.util.List;
@@ -13,12 +15,14 @@ public interface ProductsContract {
     interface View {
         void setProgressIndicator(boolean active);
         void showProducts(List<Product> categories);
+        void showDetailProduct(String id);
        // void showAllProducts(String catId);
     }
 
     interface UserActionsListener {
 
         void loadProducts(String catId,String search,int offset,boolean forceUpdate);
+        void openProductDetails(@NonNull Product requestedProduct);
        // void showProducts(@NonNull Product requestedCategory );
 
     }

@@ -60,7 +60,9 @@ android {
         prod { java.srcDirs = ['src/prod/java', 'src/prod/java/'] }
         prodDebug { java.srcDirs = ['src/prodDebug/java', 'src/prod'] }
         mock { java.srcDirs = ['src/mock/java', 'src/mock/java/'] }
-        main { java.srcDirs = ['src/main/java', 'src/main/java/data/provider'] }
+        main {
+            java.srcDirs = ['src/main/java', 'src/main/java/data/provider', 'src/main/java/productdetail']
+        }
     }
 }
 
@@ -82,13 +84,7 @@ dependencies {
     compile "com.google.guava:guava:$rootProject.guavaVersion"
     compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
     compile "com.android.support.test.espresso:espresso-idling-resource:$rootProject.ext.espressoVersion"
-    compile 'com.google.code.gson:gson:2.6.1'
-    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
-    compile 'com.squareup.okhttp3:okhttp:3.1.2'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
     apt 'net.simonvt.schematic:schematic-compiler:0.6.3'
-    compile 'net.simonvt.schematic:schematic:0.6.3'
 
     // compile project(':swipecards')
 
@@ -107,6 +103,15 @@ dependencies {
     androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"
     androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
     androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
+    compile 'com.google.code.gson:gson:2.6.1'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
+    compile 'com.squareup.okhttp3:okhttp:3.1.2'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
+    compile 'net.simonvt.schematic:schematic:0.6.3'
+    compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:design:23.2.1'
 }
 
 

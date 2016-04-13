@@ -48,6 +48,28 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
         });
     }
 
+
+    @Override
+    public void openProductDetails(final Product product) {
+
+        mProductsView.setProgressIndicator(true);
+
+
+        // The network request might be handled in a different thread so make sure Espresso knows
+        // that the app is busy until the response is handled.
+        EspressoIdlingResource.increment(); // App is busy until further notice
+
+        mProductssRepository.getProduct(product.getId(), new ProductsRepository.GetProductCallback() {
+            @Override
+            public void onProductLoaded(Product categories) {
+                EspressoIdlingResource.decrement(); // Set app as idle.
+                mProductsView.setProgressIndicator(false);
+                mProductsView.showDetailProduct(product.getId());
+            }
+        });
+    }
+
+
 //    @Override
 //    public void showProducts(Product category){
 //        // mCategoriesView.showAllProducts();

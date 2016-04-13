@@ -43,6 +43,18 @@ public class InMemoryProductsRepository implements ProductsRepository {
 
 
 
+    @Override
+    public void getProduct(@NonNull final String productId, @NonNull final ProductsRepository.GetProductCallback callback) {
+        checkNotNull(productId);
+        checkNotNull(callback);
+        // Load notes matching the id always directly from the API.
+        mCategoriesServiceApi.getProduct(productId, new ProductsServiceApi.GetProductServiceCallback<Product>() {
+            @Override
+            public void onProductLoaded(Product product) {
+                callback.onProductLoaded(product);
+            }
+        });
+    }
 
 
     @Override
