@@ -17,7 +17,7 @@ public interface ProductsRepository {
 
     interface GetProductCallback{
 
-        void onProductLoaded(Product product);
+        void onProductLoaded(ProductDetail product);
 
     }
     void getProduct(@NonNull String productId,@NonNull GetProductCallback callback);

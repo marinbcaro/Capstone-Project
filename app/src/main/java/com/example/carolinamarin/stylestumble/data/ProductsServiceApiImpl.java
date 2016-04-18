@@ -26,8 +26,8 @@ import retrofit2.http.Query;
 public class ProductsServiceApiImpl implements ProductsServiceApi {
 
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
-    private static final String BASE_URL = "/api/v2/products?pid=";
-    private static final String API_KEY = "uid9049-30800243-85";
+    private static final String BASE_URL = "/api/v2/products";
+    private static final String API_KEY = "?pid=uid9049-30800243-85";
     private static final String API_URL = BASE_URL + API_KEY;
     private  ArrayMap<String, Product> DATA = new ArrayMap(2);
 
@@ -67,16 +67,16 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
         ShopStyleService mService = retrofit.create(ShopStyleService.class);
 
-        Call<Product> call = mService.getProduct(productId);
-        call.enqueue(new Callback<Product>() {
+        Call<ProductDetail> call = mService.getProduct(productId);
+        call.enqueue(new Callback<ProductDetail>() {
             @Override
-            public void onResponse(Call<Product> call, Response<Product> response) {
+            public void onResponse(Call<ProductDetail> call, Response<ProductDetail> response) {
                 int statusCode = response.code();
 
                 if (response.isSuccess()) {
                     DATA.clear();
 
-                    Product productInfo = response.body();
+                    ProductDetail productInfo = response.body();
 
                     callback.onProductLoaded(productInfo);
 
@@ -86,7 +86,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
             }
 
             @Override
-            public void onFailure(Call<Product> call, Throwable t) {
+            public void onFailure(Call<ProductDetail> call, Throwable t) {
                 // Log error here since request failed
                 Log.d("Error", t.getMessage());
             }
@@ -156,8 +156,8 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
         @GET(API_URL + "&sort=Popular&limit=10")
         Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search,@Query("offset") int offset );
 
-        @GET(API_URL + "/{id}")
-        Call<Product> getProduct(@Path("id") String id);
+        @GET(BASE_URL + "/{id}"+API_KEY)
+        Call<ProductDetail> getProduct(@Path("id") String id);
     }
 
 

@@ -22,7 +22,7 @@ public interface ProductsContract {
     interface UserActionsListener {
 
         void loadProducts(String catId,String search,int offset,boolean forceUpdate);
-        void openProductDetails(@NonNull Product requestedProduct);
+        void openProductDetails(@NonNull String productId);
        // void showProducts(@NonNull Product requestedCategory );
 
     }

@@ -3,7 +3,7 @@ package com.example.carolinamarin.stylestumble.productdetail;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.carolinamarin.stylestumble.data.Product;
+import com.example.carolinamarin.stylestumble.data.ProductDetail;
 import com.example.carolinamarin.stylestumble.data.ProductsRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -22,17 +22,17 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
         mProductsDetailView=checkNotNull(productsView,"productsview cannot be null");
     }
 
-    private void showProduct(Product product) {
+    private void showProduct(ProductDetail product) {
         String title = product.getName();
         String description = product.getDescription();
-        String imageUrl = product.getImage().sizes.IPhoneSmall.url;
+        String imageUrl = product.getImage().sizes.IPhone.url;
 
 
 
         if (title != null && title.isEmpty()) {
             mProductsDetailView.hideTitle();
         } else {
-            mProductsDetailView.showTitle(title);
+            mProductsDetailView.showTitle(title,imageUrl);
         }
 
 //        if (description != null && description.isEmpty()) {
@@ -55,7 +55,7 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
         mProductsDetailView.setProgressIndicator(true);
         mProductssRepository.getProduct(productId, new ProductsRepository.GetProductCallback() {
             @Override
-            public void onProductLoaded(Product product) {
+            public void onProductLoaded(ProductDetail product) {
                 mProductsDetailView.setProgressIndicator(false);
                     showProduct(product);
 

@@ -18,5 +18,5 @@ public interface ProductsServiceApi {
         void onProductLoaded(T product);
     }
 
-    void getProduct(String productId,GetProductServiceCallback<Product> callback);
+    void getProduct(String productId,GetProductServiceCallback<ProductDetail> callback);
 }

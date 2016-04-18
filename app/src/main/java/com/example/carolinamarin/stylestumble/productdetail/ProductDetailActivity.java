@@ -2,6 +2,7 @@ package com.example.carolinamarin.stylestumble.productdetail;
 
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.test.espresso.IdlingResource;
@@ -21,13 +22,20 @@ public class ProductDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Get the requested note id
         String productId = getIntent().getStringExtra(PRODUCT_ID);
 
         initFragment(ProductDetailFragment.newInstance(productId));
+
+
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+      //  collapsingToolbar.setTitle(cheeseName);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

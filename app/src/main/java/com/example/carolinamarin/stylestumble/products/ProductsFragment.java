@@ -56,6 +56,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     public static final String ARGUMENT_CAT_ID = "CATEGORY_ID";
     private static final int CURSOR_LOADER_ID = 0;
+    public      SwipeRefreshLayout swipeRefreshLayout;
 
     private static ProductsContract.UserActionsListener mActionsListener;
 
@@ -165,6 +166,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         mListAdapter.swapCursor(data);
 
 
+
     }
 
     @Override
@@ -228,6 +230,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         for (Product product : products) {
             ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                     ProductProvider.Products.PRODUCTS);
+            builder.withValue(ProductColumns._ID, product.getId());
             builder.withValue(ProductColumns.NAME, product.getName());
             builder.withValue(ProductColumns.DESCRIPTION, product.getDescription());
             if (product.getBrand() != null) {
@@ -267,7 +270,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
-        SwipeRefreshLayout swipeRefreshLayout =
+         swipeRefreshLayout =
                 (SwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(
                 ContextCompat.getColor(getActivity(), R.color.colorPrimary),
@@ -282,7 +285,30 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
             }
         });
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mListAdapter);
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                int totalItemCount = linearLayoutManager.getItemCount();
+                int visibleItemCount = linearLayoutManager.getChildCount();
+                int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+                boolean enable=false;
+
+                if(totalItemCount>0){
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = visibleItemCount == 3;
+                    // check if the top of the first item is visible
+                    boolean topOfFirstItemVisible = firstVisibleItem== 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible && topOfFirstItemVisible;
+                    swipeRefreshLayout.setEnabled(enable);
+
+                }
+            }
+        });
+
+
+                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mListAdapter);
 
         mItemTouchHelper = new ItemTouchHelper(callback);
 
@@ -294,8 +320,8 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     ProductItemListener mItemListener = new ProductItemListener() {
         @Override
-        public void onProductClick(Product clickedProduct) {
-            mActionsListener.openProductDetails(clickedProduct);
+        public void onProductClick(String productId) {
+            mActionsListener.openProductDetails(productId);
         }
     };
 
@@ -378,20 +404,32 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
             @Override
             public void onClick(View v) {
-//                int pos=(Integer) v.getTag();
+                int pos=getAdapterPosition();
+                getCursor().moveToPosition(pos);
+                int currentPosition = getCursor().getPosition();
+                Cursor c = getCursor();
+                c.moveToPosition(currentPosition);
+
+                String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+
+//                ProductProvider.Products.withId(_id);
+           //     getActivity().getContentResolver().insert(
+
 //                long cursorId = getItemId(pos);
+//
 //                Cursor c = getCursor();
 //                ContentValues cv = new ContentValues();
 //               // int position = getAdapterPosition();
 //                Cursor cursor=getCursor();
 //                int position=cursor.getPosition();
 //          //      Product product = getItem(position);
-//                mItemListener.onProductClick(product);
+                        mItemListener.onProductClick(id);
 
             }
 
             @Override
             public void onItemSelected() {
+
                //    itemView.setBackgroundColor(Color.LTGRAY);
             }
 
@@ -450,7 +488,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     public interface ProductItemListener {
 
-         void onProductClick(Product clickedProduct);
+         void onProductClick(String idProduct);
     }
 
 

@@ -15,7 +15,7 @@ public interface ProductDetailContract {
 //
         void hideTitle();
 
-        void showTitle(String title);
+        void showTitle(String title,String image);
 
 //        void showImage(String imageUrl);
 //
@@ -23,7 +23,7 @@ public interface ProductDetailContract {
 //
 //        void hideDescription();
 //
-//        void showDescription(String description);
+        void showDescription(String description);
     }
 
     interface UserActionsListener {

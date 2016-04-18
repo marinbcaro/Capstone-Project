@@ -48,9 +48,9 @@ public class InMemoryProductsRepository implements ProductsRepository {
         checkNotNull(productId);
         checkNotNull(callback);
         // Load notes matching the id always directly from the API.
-        mCategoriesServiceApi.getProduct(productId, new ProductsServiceApi.GetProductServiceCallback<Product>() {
+        mCategoriesServiceApi.getProduct(productId, new ProductsServiceApi.GetProductServiceCallback<ProductDetail>() {
             @Override
-            public void onProductLoaded(Product product) {
+            public void onProductLoaded(ProductDetail product) {
                 callback.onProductLoaded(product);
             }
         });

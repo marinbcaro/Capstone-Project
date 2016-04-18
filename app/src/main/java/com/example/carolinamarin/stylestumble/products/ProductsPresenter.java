@@ -2,8 +2,8 @@ package com.example.carolinamarin.stylestumble.products;
 
 import android.support.annotation.NonNull;
 
-
 import com.example.carolinamarin.stylestumble.data.Product;
+import com.example.carolinamarin.stylestumble.data.ProductDetail;
 import com.example.carolinamarin.stylestumble.data.ProductsRepository;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
 
@@ -50,7 +50,7 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
 
 
     @Override
-    public void openProductDetails(final Product product) {
+    public void openProductDetails(final String product) {
 
         mProductsView.setProgressIndicator(true);
 
@@ -59,12 +59,12 @@ public class ProductsPresenter implements  ProductsContract.UserActionsListener{
         // that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
 
-        mProductssRepository.getProduct(product.getId(), new ProductsRepository.GetProductCallback() {
+        mProductssRepository.getProduct(product, new ProductsRepository.GetProductCallback() {
             @Override
-            public void onProductLoaded(Product categories) {
+            public void onProductLoaded(ProductDetail categories) {
                 EspressoIdlingResource.decrement(); // Set app as idle.
                 mProductsView.setProgressIndicator(false);
-                mProductsView.showDetailProduct(product.getId());
+                mProductsView.showDetailProduct(product);
             }
         });
     }

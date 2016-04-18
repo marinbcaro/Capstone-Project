@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 
@@ -39,6 +41,14 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     }
 
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String noteId = getArguments().getString(PRODUCT_ID);
+        mActionsListener.openProduct(noteId);
+    }
+
     @Override
     public void setProgressIndicator(boolean active) {
         if (active) {
@@ -57,19 +67,34 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_product_detail, container, false);
+
+
         mDetailTitle = (TextView) root.findViewById(R.id.note_detail_title);
-    //    mDetailDescription = (TextView) root.findViewById(R.id.note_detail_description);
+        mDetailDescription = (TextView) root.findViewById(R.id.note_detail_description);
       //  mDetailImage = (ImageView) root.findViewById(R.id.note_detail_image);
+        mDetailImage=  (ImageView) getActivity().findViewById(R.id.backdrop);
 
 
-        return inflater.inflate(R.layout.fragment_product_detail, container, false);
+        return root;
     }
 
     @Override
-    public void showTitle(String title) {
+    public void showTitle(String title,String image) {
+
+        Glide.with(getContext()).load(image).centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(mDetailImage);
+
         mDetailTitle.setVisibility(View.VISIBLE);
         mDetailTitle.setText(title);
     }
+
+    @Override
+    public void showDescription(String desc) {
+        mDetailDescription.setVisibility(View.VISIBLE);
+        mDetailDescription.setText(desc);
+    }
+
 
     @Override
     public void hideTitle() {
