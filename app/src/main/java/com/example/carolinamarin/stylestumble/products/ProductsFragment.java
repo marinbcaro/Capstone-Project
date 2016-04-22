@@ -143,6 +143,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                         null, null);
                 mActionsListener.loadProducts(catId, searchQuery, 0, true);
                 getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+
             }
         }
 
@@ -192,8 +193,10 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 searchQuery = query;
                 String catId = getArguments().getString(ARGUMENT_CAT_ID);
                 // mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), getApplicationContext());
-                getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
-                        null, null);
+              //  if(getContext().getContentResolver()!=null) {
+                    getContext().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
+                            null, null);
+                //}
                 mActionsListener.loadProducts(catId, query, offset, true);
                 // Reset SearchView
                 searchView.clearFocus();
@@ -225,7 +228,6 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
     @Override
     public void showProducts(List<Product> products) {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(products.size());
-
 
         for (Product product : products) {
             ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
@@ -283,8 +285,12 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 offset++;
                 int totalPages = offset * 50;
                 mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
+
+
+
             }
         });
+
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

@@ -12,7 +12,9 @@ public class ProductDetail {
     private final String description;
     private final String name;
     private final String clickUrl;
-    public final String brandedName;
+   // public final String unbrandedName;
+    public final Brand brand;
+    public final Retailer retailer;
     private final Double price;
     public final Image image;
 
@@ -29,13 +31,25 @@ public class ProductDetail {
         public   String url;
     }
 
-    public ProductDetail(@Nullable String mid,@Nullable String mdescription,String mname,String murl,String mbrand,Double mprice,Image mimage) {
+    public  class Brand {
+        public   String name;
+
+
+    }
+    public  class Retailer {
+        public   String name;
+
+
+    }
+
+    public ProductDetail(@Nullable String mid,@Nullable String mdescription,String mname,String murl,Brand mbrand,Double mprice,Image mimage,Retailer mretailer) {
         //   mId = UUID.randomUUID().toString();
         id=mid;
+        retailer=mretailer;
         description = mdescription;
         name=mname;
         clickUrl=murl;
-        brandedName=mbrand;
+        brand=mbrand;
         price=mprice;
         image=mimage;
 
@@ -54,10 +68,10 @@ public class ProductDetail {
     public String getClickUrl() {
         return clickUrl;
     }
-    @Nullable
-    public String getBrandedName() {
-        return brandedName;
-    }
+  //  @Nullable
+//    public String getBrandedName() {
+//        return unbrandedName;
+//    }
     @Nullable
     public String getDescription() {
         return description;

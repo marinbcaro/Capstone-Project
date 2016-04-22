@@ -24,6 +24,9 @@ public interface ProductDetailContract {
 //        void hideDescription();
 //
         void showDescription(String description);
+        void showBrand(String brand);
+        void showRetailer(String retailer);
+        void showPrice(Double price);
     }
 
     interface UserActionsListener {

@@ -26,14 +26,23 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
         String title = product.getName();
         String description = product.getDescription();
         String imageUrl = product.getImage().sizes.IPhone.url;
+      //  String brand=product.brand.name;
+        String retailer=product.retailer.name;
+        double price=product.getPrice();
 
 
 
-        if (title != null && title.isEmpty()) {
-            mProductsDetailView.hideTitle();
-        } else {
+//        if (title != null && title.isEmpty()) {
+//            mProductsDetailView.hideTitle();
+//        } else {
             mProductsDetailView.showTitle(title,imageUrl);
-        }
+            mProductsDetailView.showDescription(description);
+            mProductsDetailView.showDescription(description);
+       //     mProductsDetailView.showBrand(brand);
+            mProductsDetailView.showPrice(price);
+            mProductsDetailView.showRetailer(retailer);
+
+      //  }
 
 //        if (description != null && description.isEmpty()) {
 //            mNotesDetailView.hideDescription();
