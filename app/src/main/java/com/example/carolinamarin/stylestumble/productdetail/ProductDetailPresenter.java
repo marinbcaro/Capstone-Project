@@ -26,6 +26,7 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
         String title = product.getName();
         String description = product.getDescription();
         String imageUrl = product.getImage().sizes.IPhone.url;
+        String retailerUrl=product.getClickUrl();
       //  String brand=product.brand.name;
         String retailer=product.retailer.name;
         double price=product.getPrice();
@@ -41,7 +42,7 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
        //     mProductsDetailView.showBrand(brand);
             mProductsDetailView.showPrice(price);
             mProductsDetailView.showRetailer(retailer);
-
+            mProductsDetailView.showShop(retailerUrl);
       //  }
 
 //        if (description != null && description.isEmpty()) {

@@ -27,6 +27,7 @@ public interface ProductDetailContract {
         void showBrand(String brand);
         void showRetailer(String retailer);
         void showPrice(Double price);
+        void showShop(String url);
     }
 
     interface UserActionsListener {

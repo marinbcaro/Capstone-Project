@@ -1,8 +1,11 @@
 package com.example.carolinamarin.stylestumble.productdetail;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -150,9 +153,14 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) getActivity().findViewById(R.id.collapsing_toolbar);
 
+        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(0, 0, 0));
+
+
+
+
         collapsingToolbar.setTitle(title);
         collapsingToolbar.setExpandedTitleColor(00000000);
-        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(1, 1, 1));
+        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(0, 0, 0));
 
         mDetailTitle.setText(title);
 
@@ -191,5 +199,26 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     @Override
     public void hideTitle() {
 //        mDetailTitle.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showShop(String urlProduct){
+
+     final   String url=urlProduct;
+
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+            }
+        });
+
+
     }
 }
