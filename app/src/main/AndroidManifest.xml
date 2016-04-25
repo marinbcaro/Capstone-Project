@@ -8,7 +8,15 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <permission
+        android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission
+        android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE" />
     <application
         android:allowBackup="true"
 
@@ -29,6 +37,7 @@
         <activity
             android:name=".products.ProductsActivity"
             android:label="@string/title_activity_products"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.searchable"
@@ -43,6 +52,14 @@
             android:name=".data.provider.generated.ProductProvider"
             android:authorities="com.example.carolinamarin.stylestumble.data.provider.ProductProvider"
             android:exported="false" />
+        <service android:name=".addsaleProducts.ProductSaleTaskService"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+            </intent-filter>
+        </service>
+        <service android:name=".addsaleProducts.ProductSaleIntentService" />
 
         <activity
             android:name=".addProductWishList.WishListActivity"

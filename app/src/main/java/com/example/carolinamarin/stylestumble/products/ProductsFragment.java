@@ -1,19 +1,26 @@
 package com.example.carolinamarin.stylestumble.products;
 
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -38,11 +46,15 @@ import com.example.carolinamarin.stylestumble.data.Product;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
 import com.example.carolinamarin.stylestumble.data.provider.WishListColumns;
+import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleIntentService;
+import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleTaskService;
 import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperViewHolder;
 import com.example.carolinamarin.stylestumble.util.SimpleItemTouchHelperCallback;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.OneoffTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,12 +77,14 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
     private TextView mDetailDescription;
 
     private ImageView mDetailImage;
+    private BroadcastReceiver mReceiver;
 
     private ItemTouchHelper mItemTouchHelper;
     private ProductsAdapter mListAdapter;
     private static String searchQuery;
     private String category;
     private static String cat_id;
+    private Context mContext;
     private static int offset = 0;
     List<Product> mProducts;
     public static final String ARG_OBJECT = "object";
@@ -90,6 +104,36 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
         //   mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
         setHasOptionsMenu(true);
+
+        final  NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getContext())
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+
+
+
+
+        setUpGcmTask(getActivity());
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(ProductSaleTaskService.ACTION_DONE)) {
+                    String tag = intent.getStringExtra(ProductSaleTaskService.EXTRA_TAG);
+                    int result = intent.getIntExtra(ProductSaleTaskService.EXTRA_RESULT, -1);
+
+                    String msg = String.format("DONE: %s (%d)", tag, result);
+
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                    // mId allows you to update the notification later on.
+                    mNotificationManager.notify(1, mBuilder.build());
+
+                }
+            }
+        };
+
+
 
     }
 
@@ -148,9 +192,78 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         }
 
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ProductSaleTaskService.ACTION_DONE);
+
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
+        manager.registerReceiver(mReceiver, filter);
+
+
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
 
+    }
+
+
+    private void setUpGcmTask(Context mContext){
+
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        Intent mServiceIntent = new Intent(getContext(), ProductSaleIntentService.class);
+
+        if(isConnected){
+
+            getActivity().startService(mServiceIntent);
+
+
+
+            OneoffTask myTask = new OneoffTask.Builder()
+                    .setService(ProductSaleTaskService.class)
+                    .setExecutionWindow(0L, 60L)
+                    .setTag("product")
+                    .build();
+            GcmNetworkManager.getInstance(getContext()).schedule(myTask);
+
+//        //    long period = 3600L;
+//            long period=5L;
+//            long flex = 10L;
+//            String periodicTag = "periodic";
+//
+//            // create a periodic task to pull stocks once every hour after the app has been opened. This
+//            // is so Widget data stays up to date.
+//            PeriodicTask periodicTask = new PeriodicTask.Builder()
+//                    .setService(ProductSaleTaskService.class)
+//                    .setPeriod(period)
+//                    .setFlex(flex)
+//                    .setTag(periodicTag)
+//                    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+//                    .setRequiresCharging(false)
+//                    .build();
+//            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+//            // are updated.
+//            GcmNetworkManager.getInstance(this).schedule(periodicTask);
+//            Bundle args =new Bundle();
+//            args.putString("product","hola");
+//
+//            ProductSaleTaskService serv=new ProductSaleTaskService();
+//
+//            serv.onRunTask(new TaskParams())
+
+        }
+        else{
+            networkToast();
+        }
+
+
+
+    }
+    public void networkToast(){
+        Toast.makeText(mContext, "not connected", Toast.LENGTH_SHORT).show();
     }
 
     @Override

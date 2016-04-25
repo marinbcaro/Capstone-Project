@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'com.google.gms.google-services'
 
 android {
 //    compileSdkVersion 23
@@ -112,6 +113,7 @@ dependencies {
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.android.support:recyclerview-v7:23.2.1'
     compile 'com.android.support:design:23.2.1'
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
 }
 
 
@@ -124,4 +126,7 @@ configurations.compile.dependencies.each { compileDependency ->
     configurations.androidTestCompile.dependencies.each { androidTestCompileDependency ->
         configurations.androidTestCompile.exclude module: "${compileDependency.getName()}"
     }
+}
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.1.1'
 }

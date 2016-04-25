@@ -1,6 +1,8 @@
 package com.example.carolinamarin.stylestumble.products;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
@@ -10,14 +12,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-//import android.support.v7.widget.Toolbar;
-import android.widget.Toolbar;
 import android.view.View;
+import android.widget.Toolbar;
 
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListActivity;
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListFragment;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
+
+//import android.support.v7.widget.Toolbar;
 
 
 public class ProductsActivity extends AppCompatActivity {
@@ -27,12 +30,13 @@ public class ProductsActivity extends AppCompatActivity {
     private int number_products = 0;
     private int offset = 0;
     private String searchQuery;
-
+    private Context mContext;
+    private BroadcastReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
-
+        mContext=this;
         String categoryId = getIntent().getStringExtra(CAT_ID);
 
 
@@ -50,7 +54,18 @@ public class ProductsActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabanim_tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+
+
     }
+//
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//    }
+
+
 
     private void setUpViewPager(CustomViewPager viewPager) {
         TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
