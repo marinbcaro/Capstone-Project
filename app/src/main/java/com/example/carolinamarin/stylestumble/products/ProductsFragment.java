@@ -1,6 +1,8 @@
 package com.example.carolinamarin.stylestumble.products;
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -42,12 +44,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
+import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleIntentService;
+import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleTaskService;
 import com.example.carolinamarin.stylestumble.data.Product;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
 import com.example.carolinamarin.stylestumble.data.provider.WishListColumns;
-import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleIntentService;
-import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleTaskService;
 import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
@@ -105,34 +107,54 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         //   mListAdapter = new ProductsAdapter(getActivity(),null,new ArrayList<Product>(0), mItemListener);
         setHasOptionsMenu(true);
 
-        final  NotificationCompat.Builder mBuilder =
+
+
+        Intent intent = new Intent(getContext(), ProductsActivity.class);
+        intent.putExtra("POSITION_KEY",1);
+        int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
+        int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
+        PendingIntent pIntent = PendingIntent.getActivity(getContext(), requestID, intent, flags);
+
+
+
+        final   Notification mBuilder =
                 new NotificationCompat.Builder(getContext())
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
+                        .setContentTitle("Sale Alert")
+                        .setContentText("Some products in your wishlist are on Sale! grab them before they are gone!")
+                        .setContentIntent(pIntent)
+                        .setAutoCancel(true)
+                        .build();
 
 
 
 
-        setUpGcmTask(getActivity());
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(ProductSaleTaskService.ACTION_DONE)) {
-                    String tag = intent.getStringExtra(ProductSaleTaskService.EXTRA_TAG);
-                    int result = intent.getIntExtra(ProductSaleTaskService.EXTRA_RESULT, -1);
 
-                    String msg = String.format("DONE: %s (%d)", tag, result);
 
-                    NotificationManager mNotificationManager =
-                            (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                    // mId allows you to update the notification later on.
-                    mNotificationManager.notify(1, mBuilder.build());
 
+        if (savedInstanceState == null) {
+
+            setUpGcmTask(getActivity());
+            mReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals(ProductSaleTaskService.ACTION_DONE)) {
+                        String tag = intent.getStringExtra(ProductSaleTaskService.EXTRA_TAG);
+                     //   int result = intent.getIntExtra(ProductSaleTaskService.EXTRA_RESULT, -1);
+                        String result = intent.getStringExtra(ProductSaleTaskService.EXTRA_RESULT);
+                        if(result.equals("display")) {
+
+                           // String msg = String.format("DONE: %s (%d)", tag, result);
+
+                            NotificationManager mNotificationManager =
+                                    (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                            // mId allows you to update the notification later on.
+                            mNotificationManager.notify(1, mBuilder);
+                        }
+                    }
                 }
-            }
-        };
-
+            };
+        }
 
 
     }
@@ -228,6 +250,14 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                     .setTag("product")
                     .build();
             GcmNetworkManager.getInstance(getContext()).schedule(myTask);
+
+            //NO DEBUBBING
+//            ProductSaleTaskService stockTaskService = new ProductSaleTaskService(getActivity());
+//            Bundle args = new Bundle();
+//            args.putString("product", "product");
+//            stockTaskService.onRunTask(new TaskParams("product", args));
+            //NO DEBUBBING
+
 
 //        //    long period = 3600L;
 //            long period=5L;
@@ -568,7 +598,8 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
             if (orientation == 32) {
 
-
+                cv.put(WishListColumns._ID,
+                        c.getString(c.getColumnIndex(ProductColumns._ID)));
                 cv.put(WishListColumns.NAME,
                         c.getString(c.getColumnIndex(ProductColumns.NAME)));
 

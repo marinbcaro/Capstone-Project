@@ -17,6 +17,7 @@ public class ProductDetail {
     public final Retailer retailer;
     private final Double price;
     public final Image image;
+    private final String salePrice;
 
     public  class Image {
         public Sizes sizes;
@@ -42,7 +43,7 @@ public class ProductDetail {
 
     }
 
-    public ProductDetail(@Nullable String mid,@Nullable String mdescription,String mname,String murl,Brand mbrand,Double mprice,Image mimage,Retailer mretailer) {
+    public ProductDetail(@Nullable String mid,@Nullable String mdescription,String mname,String murl,Brand mbrand,Double mprice,Image mimage,Retailer mretailer,String msalePrice) {
         //   mId = UUID.randomUUID().toString();
         id=mid;
         retailer=mretailer;
@@ -52,6 +53,7 @@ public class ProductDetail {
         brand=mbrand;
         price=mprice;
         image=mimage;
+        salePrice=msalePrice;
 
     }
 
@@ -81,8 +83,12 @@ public class ProductDetail {
         return image;
     }
     @Nullable
-    public double getPrice() {
+         public double getPrice() {
         return price;
+    }
+    @Nullable
+    public String getSalePrice() {
+        return salePrice;
     }
 
 

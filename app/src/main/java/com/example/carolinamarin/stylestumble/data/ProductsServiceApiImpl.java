@@ -128,8 +128,13 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                     for (Product contributor : contributors) {
                         Brand h = contributor.getBrand();
                         Image ima = contributor.getImage();
+                        String salePrice="0";
+                        if(contributor.getSalePrice()!=null){
+                            salePrice=contributor.getSalePrice();
+                        }
+
                       //  addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
-                        Product product = new Product(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
+                        Product product = new Product(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima,salePrice);
 
                         DATA.put(product.getId(), product);
                     }
@@ -153,8 +158,11 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
 
     public interface ShopStyleService {
+
         @GET(API_URL + "&sort=Popular&limit=10")
         Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search,@Query("offset") int offset );
+
+
 
         @GET(BASE_URL + "/{id}"+API_KEY)
         Call<ProductDetail> getProduct(@Path("id") String id);

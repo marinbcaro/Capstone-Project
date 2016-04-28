@@ -56,6 +56,10 @@ public class ProductsActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
 
+        int position = getIntent().getIntExtra("POSITION_KEY",0);
+        if(position!=0){
+        viewPager.setCurrentItem(position);
+        }
 
     }
 //
