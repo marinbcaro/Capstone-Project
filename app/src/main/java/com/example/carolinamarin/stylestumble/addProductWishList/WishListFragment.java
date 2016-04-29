@@ -34,10 +34,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class WishListFragment extends Fragment implements WishListContract.View,LoaderManager.LoaderCallbacks<Cursor>  {
+public class WishListFragment extends Fragment implements WishListContract.View, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int CURSOR_LOADER_ID = 0;
     private WishListAdapter mListAdapter;
+
     public WishListFragment() {
     }
 
@@ -45,7 +46,6 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         WishListFragment fragment = new WishListFragment();
         return fragment;
     }
-
 
 
     @Override
@@ -60,24 +60,17 @@ public class WishListFragment extends Fragment implements WishListContract.View,
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
-
-
-
         Cursor c = getActivity().getContentResolver().query(ProductProvider.WishList.WISHLIST,
                 null, null, null, null);
         Log.i("count", "cursor count: " + c.getCount());
-
-
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
-
     }
 
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), ProductProvider.WishList.WISHLIST,
                 null,
                 null,
@@ -87,20 +80,20 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mListAdapter.swapCursor(data);
 
 
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader){
+    public void onLoaderReset(Loader<Cursor> loader) {
         mListAdapter.swapCursor(null);
     }
 
 
     @Override
-    public void showProducts(){
+    public void showProducts() {
 
 
     }
@@ -113,40 +106,36 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         View root = inflater.inflate(R.layout.fragment_wish_list, container, false);
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_wish_list);
 
-        mListAdapter = new WishListAdapter(getActivity(),null);
+        mListAdapter = new WishListAdapter(getActivity(), null);
         recyclerView.setAdapter(mListAdapter);
-
         //  recyclerView.setAdapter(mListAdapter);
 
-
         int numColumns = 1;
-
         // recyclerView.setHasFixedSize(true);
         //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-
-
         return root;
 
     }
 
 
-   // private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder>
+    // private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder>
+
+    public interface ProductItemListener {
+
+        // void onNoteClick(Note clickedNote);
+    }
 
     private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
-        private List<Category> mCategories;
-
-
         Context mContext;
         ViewHolder mVh;
-        public WishListAdapter(Context context, Cursor cursor){
+        private List<Category> mCategories;
+
+        public WishListAdapter(Context context, Cursor cursor) {
             super(context, cursor);
             mContext = context;
         }
-
-
 
 
         @Override
@@ -159,8 +148,9 @@ public class WishListFragment extends Fragment implements WishListContract.View,
             mVh = vh;
             return vh;
         }
+
         @Override
-        public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor){
+        public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             //   DatabaseUtils.dumpCursor(cursor);
             viewHolder.title.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
@@ -177,7 +167,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         }
 
         @Override
-        public void onItemDismiss(int position,int dir) {
+        public void onItemDismiss(int position, int dir) {
 
             long cursorId = getItemId(position);
             Cursor c = getCursor();
@@ -212,8 +202,6 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //        }
 
 
-
-
         private void setList(List<Category> categories) {
             mCategories = checkNotNull(categories);
         }
@@ -222,7 +210,6 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //        public int getItemCount() {
 //         //   return mCategories.size();
 //        }
-
 
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -241,7 +228,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
                 title = (TextView) itemView.findViewById(R.id.product_detail_title);
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
-                image=(ImageView)itemView.findViewById(R.id.product_image);
+                image = (ImageView) itemView.findViewById(R.id.product_image);
                 //   itemView.setOnClickListener(this);
             }
 
@@ -253,10 +240,6 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
             }
         }
-    }
-    public interface ProductItemListener {
-
-        // void onNoteClick(Note clickedNote);
     }
 
 

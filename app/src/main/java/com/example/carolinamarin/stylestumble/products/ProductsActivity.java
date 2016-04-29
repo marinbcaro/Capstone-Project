@@ -18,6 +18,7 @@ import android.widget.Toolbar;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListActivity;
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListFragment;
+import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleFragment;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
 
 //import android.support.v7.widget.Toolbar;
@@ -75,7 +76,7 @@ public class ProductsActivity extends AppCompatActivity {
         TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(ProductsFragment.newInstance("womens-clothes"), "Category 1");
         adapter.addFragment(new WishListFragment(), "Category 2");
-        adapter.addFragment(new WishListFragment(), "Category 3");
+        adapter.addFragment(new ProductSaleFragment(), "Category 3");
         viewPager.setAdapter(adapter);
 
     }

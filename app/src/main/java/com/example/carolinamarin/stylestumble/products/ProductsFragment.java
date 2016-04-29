@@ -123,7 +123,6 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                         .setContentTitle("Sale Alert")
                         .setContentText("Some products in your wishlist are on Sale! grab them before they are gone!")
                         .setContentIntent(pIntent)
-                        .setAutoCancel(true)
                         .build();
 
 
@@ -147,7 +146,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                            // String msg = String.format("DONE: %s (%d)", tag, result);
 
                             NotificationManager mNotificationManager =
-                                    (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                                    (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
                             // mId allows you to update the notification later on.
                             mNotificationManager.notify(1, mBuilder);
                         }
@@ -381,6 +380,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             if (product.getBrand() != null) {
                 builder.withValue(ProductColumns.BRAND, product.getBrand().name);
             }
+            builder.withValue(ProductColumns.SALEPRICE, product.getSalePrice());
             builder.withValue(ProductColumns.PRICE, product.getPrice());
             builder.withValue(ProductColumns.URL, product.getImage().sizes.IPhoneSmall.url);
             batchOperations.add(builder.build());
@@ -611,13 +611,17 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
                 cv.put(WishListColumns.PRICE,
                         c.getString(c.getColumnIndex(ProductColumns.PRICE)));
+                cv.put(WishListColumns.SALEPRICE,
+                        c.getString(c.getColumnIndex(ProductColumns.SALEPRICE)));
 
                 cv.put(WishListColumns.URL,
                         c.getString(c.getColumnIndex(ProductColumns.URL)));
+
                 mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
                         null, null);
                 mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
                         cv);
+
             } else {
                 mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
                         null, null);
