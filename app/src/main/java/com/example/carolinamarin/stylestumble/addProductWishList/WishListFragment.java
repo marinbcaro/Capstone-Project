@@ -1,7 +1,7 @@
 package com.example.carolinamarin.stylestumble.addProductWishList;
 
-import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,17 +15,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Category;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
+import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
-import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 
 import java.util.List;
 
@@ -37,7 +39,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class WishListFragment extends Fragment implements WishListContract.View, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int CURSOR_LOADER_ID = 0;
-    private WishListAdapter mListAdapter;
+    public static  WishListAdapter mListAdapter;
+    private static WishListContract.UserActionsListener mActionsListener;
+   // private static ProductsContract.UserActionsListener mActionsListener;
 
     public WishListFragment() {
     }
@@ -57,9 +61,10 @@ public class WishListFragment extends Fragment implements WishListContract.View,
     }
 
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
+        mActionsListener = new WishListPresenter(Injection.provideProductsRepository(), this);
         Cursor c = getActivity().getContentResolver().query(ProductProvider.WishList.WISHLIST,
                 null, null, null, null);
         Log.i("count", "cursor count: " + c.getCount());
@@ -98,6 +103,13 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
     }
 
+    @Override
+    public void showDetailProduct(String productId) {
+        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
+        intent.putExtra(ProductDetailActivity.PRODUCT_ID, productId);
+        startActivity(intent);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -106,7 +118,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         View root = inflater.inflate(R.layout.fragment_wish_list, container, false);
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_wish_list);
 
-        mListAdapter = new WishListAdapter(getActivity(), null);
+        mListAdapter = new WishListAdapter(getActivity(), null,mItemListener);
         recyclerView.setAdapter(mListAdapter);
         //  recyclerView.setAdapter(mListAdapter);
 
@@ -118,23 +130,26 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
     }
 
-
+    ProductItemListener mItemListener = new ProductItemListener() {
+        @Override
+        public void onProductClick(String productId) {
+            mActionsListener.openProductDetails(productId);
+        }
+    };
     // private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder>
 
-    public interface ProductItemListener {
 
-        // void onNoteClick(Note clickedNote);
-    }
-
-    private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+    private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder> {
 
         Context mContext;
         ViewHolder mVh;
+        private ProductItemListener mItemListener;
         private List<Category> mCategories;
 
-        public WishListAdapter(Context context, Cursor cursor) {
+        public WishListAdapter(Context context, Cursor cursor,ProductItemListener itemListener) {
             super(context, cursor);
             mContext = context;
+            mItemListener = itemListener;
         }
 
 
@@ -144,7 +159,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
             LayoutInflater inflater = LayoutInflater.from(context);
             View wishListView = inflater.inflate(R.layout.item_wishlist, parent, false);
 
-            ViewHolder vh = new ViewHolder(wishListView);
+            ViewHolder vh = new ViewHolder(wishListView,mItemListener);
             mVh = vh;
             return vh;
         }
@@ -166,33 +181,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
         }
 
-        @Override
-        public void onItemDismiss(int position, int dir) {
 
-            long cursorId = getItemId(position);
-            Cursor c = getCursor();
-            ContentValues cv = new ContentValues();
-//            cv.put(ArchivedPlanetColumns.NAME,
-//                    c.getString(c.getColumnIndex(PlanetColumns.NAME)));
-//            cv.put(ArchivedPlanetColumns.DIST_FROM_SUN,
-//                    c.getDouble(c.getColumnIndex(PlanetColumns.DIST_FROM_SUN)));
-//            cv.put(ArchivedPlanetColumns.IMAGE_RESOURCE,
-//                    c.getInt(c.getColumnIndex(PlanetColumns.IMAGE_RESOURCE)));
-
-
-            mContext.getContentResolver().delete(ProductProvider.WishList.withId(cursorId),
-                    null, null);
-
-            notifyItemRemoved(position);
-
-//            if(c.getCount()==1){
-//                String catId =cat_id;
-//                offset++;
-//                int totalPages = offset * 50;
-//                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
-//            }
-
-        }
 //        @Override
 //        public void onBindViewHolder(ViewHolder viewHolder, int position) {
 //
@@ -212,34 +201,68 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //        }
 
 
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public class ViewHolder extends RecyclerView.ViewHolder  {
 
             public TextView title;
 
             public TextView description;
             private ProductItemListener mItemListener;
             private ImageView image;
+            private Button button;
+            private Button buttonDelete;
 
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-
-
-                title = (TextView) itemView.findViewById(R.id.product_detail_title);
+            public ViewHolder(View view, ProductItemListener listener) {
+                super(view);
+                mItemListener = listener;
+                title = (TextView) view.findViewById(R.id.product_detail_title);
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
-                image = (ImageView) itemView.findViewById(R.id.product_image);
-                //   itemView.setOnClickListener(this);
+                image = (ImageView) view.findViewById(R.id.product_image);
+                button=(Button)view.findViewById(R.id.view_item_wishlist);
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.d("the view","id"+v.getId());
+                        int pos=getAdapterPosition();
+                        getCursor().moveToPosition(pos);
+                        int currentPosition = getCursor().getPosition();
+                        Cursor c = getCursor();
+                        c.moveToPosition(currentPosition);
+                        String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+                        mItemListener.onProductClick(id);
+                    }
+                });
+
+                buttonDelete=(Button)view.findViewById(R.id.delete_item_wishlist);
+              //  buttonDelete.setOnClickListener(this);
+                buttonDelete.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.d("the delete", "id" + v.getId());
+                        int pos=getAdapterPosition();
+                        getCursor().moveToPosition(pos);
+                        int currentPosition = getCursor().getPosition();
+                        Cursor c = getCursor();
+                        c.moveToPosition(currentPosition);
+                        String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+                        long cursorId = mListAdapter.getItemId(pos);
+                        mContext.getContentResolver().delete(ProductProvider.WishList.withId(cursorId),
+                                null, null);
+
+                        mListAdapter.notifyItemRemoved(currentPosition);
+                      //  mItemListener.onProductClick(id);
+                    }
+                });
+             //   itemView.setOnClickListener(this);
             }
 
-            @Override
-            public void onClick(View v) {
-//                int position = getAdapterPosition();
-//                Category category = getItem(position);
-//                mItemListener.onCategoryClick(category);
-
-            }
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
         }
+    }
+    public interface ProductItemListener {
+
+         void onProductClick(String clickedNote);
     }
 
 
