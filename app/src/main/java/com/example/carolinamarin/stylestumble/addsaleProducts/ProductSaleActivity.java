@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.Toast;
 
 import com.example.carolinamarin.stylestumble.R;
 
@@ -34,6 +36,16 @@ public class ProductSaleActivity extends AppCompatActivity {
             initFragment(ProductSaleFragment.newInstance());
         }
     }
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+
+        if(checked){
+            Toast.makeText(this, "here", Toast.LENGTH_SHORT);
+        }
+
+    }
+
 
     private void initFragment(Fragment detailFragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

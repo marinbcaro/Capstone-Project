@@ -194,6 +194,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
         Cursor c = getActivity().getContentResolver().query(ProductProvider.Products.PRODUCTS,
                 null, null, null, null);
+
+        Cursor c2 = getActivity().getContentResolver().query(ProductProvider.UserPreferences.USERPREFERENCES,
+                null, null, null, null);
         String catId = getArguments().getString(ARGUMENT_CAT_ID);
         Log.i("count", "cursor count: " + c.getCount());
         if (c == null || c.getCount() == 0) {

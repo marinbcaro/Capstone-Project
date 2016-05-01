@@ -96,7 +96,6 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
 
                 cv.put(ProductColumns.SALEPRICE,salePrice);
 try {
-
     mContext.getContentResolver().update(ProductProvider.Products.withId(theid), cv, null, null);
     mContext.getContentResolver().update(ProductProvider.WishList.withId(theid), cv, null, null);
 }catch(Exception e){

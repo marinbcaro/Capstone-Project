@@ -16,4 +16,6 @@ public final class ProductDatabase {
 
     @Table(WishListColumns.class) public static final String WISHLIST = "wishlist";
 
+    @Table(PreferenceColumns.class) public static final String USERPREFERENCES = "userpreferences";
+
 }

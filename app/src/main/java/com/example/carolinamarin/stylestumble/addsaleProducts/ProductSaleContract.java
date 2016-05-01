@@ -14,6 +14,7 @@ public interface ProductSaleContract {
         void showNotification(ProductDetail id);
 
 
+
     }
 
     interface UserActionsListener {

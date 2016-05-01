@@ -50,6 +50,13 @@ public class ProductProvider {
                 type = "vnd.android.cursor.dir/wishlist")
         public static final Uri WISHLIST = buildUri("wishlist");
 
+
+        @ContentUri(
+                path = "productssale",
+                type = "vnd.android.cursor.dir/productssale",
+                where=WishListColumns.SALEPRICE+" > 0")
+        public static final Uri PRODUCTSALE = buildUri("productssale");
+
         @InexactContentUri(
                 name = "WISHLIST_ID",
                 path = "wishlist/#",
@@ -59,6 +66,20 @@ public class ProductProvider {
         public static Uri withId(long id){
             return buildUri("wishlist", String.valueOf(id));
         }
+    }
+
+    @TableEndpoint(table = ProductDatabase.USERPREFERENCES)
+    public static class UserPreferences{
+        @ContentUri(
+                path = "userpreferences",
+                type = "vnd.android.cursor.dir/userpreferences")
+        public static final Uri USERPREFERENCES = buildUri("userpreferences");
+
+//        @ContentUri(
+//                path = "savenotification",
+//                type = "vnd.android.cursor.item/savenotification")
+//        public static final Uri SAVENOTIFICATION = buildUri("savenotification");
+
     }
 
 
