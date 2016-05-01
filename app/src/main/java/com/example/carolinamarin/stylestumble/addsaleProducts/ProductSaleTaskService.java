@@ -42,6 +42,11 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
     }
 
     @Override
+    public void showDetailProduct(String id){
+
+    }
+
+    @Override
     public int onRunTask(TaskParams taskParams) {
 
 

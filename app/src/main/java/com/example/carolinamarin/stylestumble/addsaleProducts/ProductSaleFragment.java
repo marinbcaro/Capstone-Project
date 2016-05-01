@@ -2,6 +2,7 @@ package com.example.carolinamarin.stylestumble.addsaleProducts;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
@@ -22,11 +23,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Category;
+import com.example.carolinamarin.stylestumble.data.ProductDetail;
 import com.example.carolinamarin.stylestumble.data.provider.PreferenceColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
+import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 
@@ -37,12 +41,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ProductSaleFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ProductSaleFragment extends Fragment implements ProductSaleContract.View, LoaderManager.LoaderCallbacks<Cursor> {
 
 
     private static final int CURSOR_LOADER_ID = 0;
     private ProductSaleAdapter mListAdapter;
-
+    private static ProductSaleContract.UserActionsListener mActionsListener;
     public ProductSaleFragment() {
     }
 
@@ -54,7 +58,7 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
+        mActionsListener = new ProductSalePresenter(Injection.provideProductsRepository(), this);
 //        Cursor c = getActivity().getContentResolver().query(ProductProvider.Products.PRODUCTS,
 //                null, null, null, null);
 //        Log.i("count", "cursor count: " + c.getCount());
@@ -82,13 +86,21 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
 
     }
 
-
+    @Override
+    public void showDetailProduct(String productId) {
+        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
+        intent.putExtra(ProductDetailActivity.PRODUCT_ID, productId);
+        startActivity(intent);
+    }
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mListAdapter.swapCursor(null);
     }
 
+@Override
+public void showNotification(ProductDetail p){
 
+}
 
     @Override
     public void onResume() {
@@ -165,13 +177,18 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
         });
 
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_sale_list);
-        mListAdapter = new ProductSaleAdapter(getActivity(), null);
+        mListAdapter = new ProductSaleAdapter(getActivity(), null,mItemListener);
         recyclerView.setAdapter(mListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
        return root;
     }
-
+    ProductItemListener mItemListener = new ProductItemListener() {
+        @Override
+        public void onProductClick(String productId) {
+            mActionsListener.openProductDetails(productId);
+        }
+    };
 
 
 
@@ -179,11 +196,13 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
 
         Context mContext;
         ViewHolder mVh;
+        private ProductItemListener mItemListener;
         private List<Category> mCategories;
 
-        public ProductSaleAdapter(Context context, Cursor cursor) {
+        public ProductSaleAdapter(Context context, Cursor cursor,  ProductItemListener itemListener) {
             super(context, cursor);
             mContext = context;
+            mItemListener = itemListener;
         }
 
 
@@ -193,7 +212,7 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
             LayoutInflater inflater = LayoutInflater.from(context);
             View wishListView = inflater.inflate(R.layout.item_product_sale, parent, false);
 
-            ViewHolder vh = new ViewHolder(wishListView);
+            ViewHolder vh = new ViewHolder(wishListView,mItemListener);
             mVh = vh;
             return vh;
         }
@@ -261,7 +280,7 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
 //        }
 
 
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public class ViewHolder extends RecyclerView.ViewHolder  {
 
             public TextView title;
 
@@ -270,24 +289,36 @@ public class ProductSaleFragment extends Fragment implements LoaderManager.Loade
             private ImageView image;
 
 
-            public ViewHolder(View itemView) {
+            public ViewHolder(View itemView,ProductItemListener listener) {
                 super(itemView);
 
-
+                mItemListener = listener;
                 title = (TextView) itemView.findViewById(R.id.product_detail_title);
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) itemView.findViewById(R.id.product_image);
                 //   itemView.setOnClickListener(this);
+               Button button=(Button)itemView.findViewById(R.id.view_product_sale);
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.d("the view","id"+v.getId());
+                        int pos=getAdapterPosition();
+                        getCursor().moveToPosition(pos);
+                        int currentPosition = getCursor().getPosition();
+                        Cursor c = getCursor();
+                        c.moveToPosition(currentPosition);
+                        String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+                        mItemListener.onProductClick(id);
+                    }
+                });
+
             }
 
-            @Override
-            public void onClick(View v) {
-//                int position = getAdapterPosition();
-//                Category category = getItem(position);
-//                mItemListener.onCategoryClick(category);
 
-            }
         }
+    }
+    public interface ProductItemListener {
+
+        void onProductClick(String clickedNote);
     }
 }
