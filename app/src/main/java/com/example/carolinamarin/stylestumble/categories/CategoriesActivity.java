@@ -10,11 +10,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.carolinamarin.stylestumble.R;
+import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.tagmanager.ContainerHolder;
+import com.google.android.gms.tagmanager.TagManager;
+
+import java.util.concurrent.TimeUnit;
 
 //import com.example.carolinamarin.stylestumble.categories.Injection;
 
 public class CategoriesActivity extends AppCompatActivity {
     private CategoriesContract.UserActionsListener mCategoriesListener;
+    TagManager mTagManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +32,8 @@ public class CategoriesActivity extends AppCompatActivity {
         setSupportActionBar(toolbarTop);
 
 
-
+        ((StyleStumbleApplication)getApplication()).startTracking();
+        loadGTMContainer();
 //
 //        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 //        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -50,6 +59,43 @@ public class CategoriesActivity extends AppCompatActivity {
             initFragment(CategoriesFragment.newInstance());
         }
 
+    }
+
+    public void loadGTMContainer () {
+        // TODO Get the TagManager
+        mTagManager = ((StyleStumbleApplication) getApplication()).getTagManager();
+
+        // Enable verbose logging
+        mTagManager.setVerboseLoggingEnabled(true);
+
+        // Load the container
+        PendingResult pending =
+
+                mTagManager.loadContainerPreferFresh("GTM-5W92R4",
+                        R.raw.stylestumble_tag);
+
+        // Define the callback to store the loaded container
+        pending.setResultCallback(new ResultCallback<ContainerHolder>() {
+            @Override
+            public void onResult(ContainerHolder containerHolder) {
+
+                // If unsuccessful, return
+                if (!containerHolder.getStatus().isSuccess()) {
+                    // Deal with failure
+                    return;
+                }
+
+                // Manually refresh the container holder
+                // Can only do this once every 15 minutes or so
+                containerHolder.refresh();
+
+                // Set the container holder, only want one per running app
+                // We can retrieve it later as needed
+                ((StyleStumbleApplication) getApplication()).setContainerHolder(
+                        containerHolder);
+
+            }
+        }, 2, TimeUnit.SECONDS);
     }
 
     private void initFragment(Fragment categoriesFragment) {

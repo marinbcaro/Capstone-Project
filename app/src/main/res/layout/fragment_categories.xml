@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<android.support.v4.widget.SwipeRefreshLayout
+<LinearLayout
     android:id="@+id/refresh_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -30,6 +30,6 @@
         android:paddingRight="@dimen/categories_activity_horizontal_margin"
         android:paddingTop="@dimen/categories_activity_vertical_margin"/>
 
-</android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>
 
 

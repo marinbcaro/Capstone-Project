@@ -1,7 +1,6 @@
 package com.example.carolinamarin.stylestumble.products;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
@@ -143,12 +142,14 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                         String result = intent.getStringExtra(ProductSaleTaskService.EXTRA_RESULT);
                         if(result.equals("display")) {
 
-                           // String msg = String.format("DONE: %s (%d)", tag, result);
-
-                            NotificationManager mNotificationManager =
-                                    (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                            // mId allows you to update the notification later on.
-                            mNotificationManager.notify(1, mBuilder);
+                            // String msg = String.format("DONE: %s (%d)", tag, result);
+//                            if (getContext()!=null) {
+//                                NotificationManager mNotificationManager =
+//                                        (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//                                // mId allows you to update the notification later on.
+//                                mNotificationManager.notify(1, mBuilder);
+//                            }
                         }
                     }
                 }
@@ -214,6 +215,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
             }
         }
+        searchQuery="";
 
 
         IntentFilter filter = new IntentFilter();
@@ -372,6 +374,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     @Override
     public void showProducts(List<Product> products) {
+
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(products.size());
 
         for (Product product : products) {
@@ -407,6 +410,13 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
         mListAdapter = new ProductsAdapter(getActivity(), null, new ArrayList<Product>(0), mItemListener);
         recyclerView.setAdapter(mListAdapter);
+
+       TextView emptyView = (TextView) root.findViewById(R.id.empty_view);
+
+// ...
+
+
+
 
         //  recyclerView.setAdapter(mListAdapter);
 

@@ -85,8 +85,8 @@ public class CategoriesServiceApiImpl  implements CategoriesServiceApi{
 //            }
 //        });
 
-         addCategory("1", "womens-clothes","womens-clothes");
-        addCategory("2", "mens-clothes","mens-clothes");
+         addCategory("1", "kids","kids");
+        addCategory("2", "kids","kids");
        List<Category> categories = new ArrayList<>(DATA.values());
                     callback.onLoaded(categories);
     }

@@ -118,6 +118,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         View root = inflater.inflate(R.layout.fragment_wish_list, container, false);
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_wish_list);
 
+
         mListAdapter = new WishListAdapter(getActivity(), null,mItemListener);
         recyclerView.setAdapter(mListAdapter);
         //  recyclerView.setAdapter(mListAdapter);

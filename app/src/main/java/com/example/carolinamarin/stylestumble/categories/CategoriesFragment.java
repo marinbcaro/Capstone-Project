@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,10 +118,12 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
 
         recyclerView.setAdapter(mCategoryAdapter);
 
-        int numColumns = getContext().getResources().getInteger(R.integer.num_categories_columns);
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//
+//        int numColumns = getContext().getResources().getInteger(R.integer.num_categories_columns);
+//
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
 
 
 
@@ -184,7 +187,18 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
 
     @Override
     public void showCategories(List<Category> categories){
-        mCategoryAdapter.replaceData(categories);
+
+        ArrayList<Category> cateList=new ArrayList<>();
+        Category cat2=new Category("womens-clothes","Women", "womens-clothes");
+        Category cat=new Category("mens-clothes","Men", "mens-clothes");
+        Category cat3=new Category("kids-and-baby","Kids", "kids-and-baby");
+
+        cateList.add(cat);
+        cateList.add(cat2);
+        cateList.add(cat3);
+
+
+        mCategoryAdapter.replaceData(cateList);
 
     }
 

@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
-apply plugin: 'com.google.gms.google-services'
+
 
 android {
 //    compileSdkVersion 23
@@ -90,20 +90,20 @@ dependencies {
     // compile project(':swipecards')
 
     // Dependencies for local unit tests
-    testCompile "junit:junit:$rootProject.ext.junitVersion"
-    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
-    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
-    testCompile "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
-    testCompile "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
-
-    // Android Testing Support Library's runner and rules
-    androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
-    androidTestCompile "com.android.support.test:rules:$rootProject.ext.runnerVersion"
-
-    // Espresso UI Testing dependencies.
-    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
+//    testCompile "junit:junit:$rootProject.ext.junitVersion"
+//    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
+//    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
+//    testCompile "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
+//    testCompile "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
+//
+//    // Android Testing Support Library's runner and rules
+//    androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
+//    androidTestCompile "com.android.support.test:rules:$rootProject.ext.runnerVersion"
+//
+//    // Espresso UI Testing dependencies.
+//    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"
+//    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
+//    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
     compile 'com.google.code.gson:gson:2.6.1'
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
@@ -113,7 +113,10 @@ dependencies {
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.android.support:recyclerview-v7:23.2.1'
     compile 'com.android.support:design:23.2.1'
-    compile 'com.google.android.gms:play-services-gcm:8.3.0'
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+
+
 }
 
 
@@ -130,3 +133,5 @@ configurations.compile.dependencies.each { compileDependency ->
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
