@@ -24,25 +24,26 @@ import java.util.Set;
 /**
  * Created by carolinamarin on 4/24/16.
  */
-public class ProductSaleTaskService extends GcmTaskService implements ProductSaleContract.View{
+public class ProductSaleTaskService extends GcmTaskService implements ProductSaleContract.View {
 
-    private Context mContext;
     public static final String ACTION_DONE = "GcmTaskService#ACTION_DONE";
     public static final String EXTRA_TAG = "extra_tag";
     public static final String EXTRA_RESULT = "extra_result";
+    private static Map<String, String> arra = new HashMap<String, String>();
+    private Context mContext;
     private ProductSaleContract.UserActionsListener mActionsListener;
-    private  boolean showMessage=false;
-    private static  Map<String,String> arra= new HashMap<String,String>();
-    public ProductSaleTaskService(Context context){
-        mContext=context;
+    private boolean showMessage = false;
+
+    public ProductSaleTaskService(Context context) {
+        mContext = context;
     }
 
-    public ProductSaleTaskService(){
+    public ProductSaleTaskService() {
 
     }
 
     @Override
-    public void showDetailProduct(String id){
+    public void showDetailProduct(String id) {
 
     }
 
@@ -56,7 +57,7 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
         intent.putExtra(EXTRA_TAG, "products");
         intent.putExtra(EXTRA_RESULT, "0");
 
-        if (mContext == null){
+        if (mContext == null) {
             mContext = this;
         }
         Cursor c = mContext.getContentResolver().query(ProductProvider.WishList.WISHLIST,
@@ -67,96 +68,71 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
         mActionsListener = new ProductSalePresenter(Injection.provideProductsRepository(),
                 this);
 
-        for(int i=0;i<c.getCount();i++){
-           String id= c.getString(c.getColumnIndex("_id"));
-            String price= c.getString(c.getColumnIndex("price"));
+        for (int i = 0; i < c.getCount(); i++) {
+            String id = c.getString(c.getColumnIndex("_id"));
+            String price = c.getString(c.getColumnIndex("price"));
             mActionsListener.loadProduct(id);
 
             Log.d("count", "cursor count: " + id);
 
             c.moveToNext();
         }
-
-        if(arra.size()>0){
+        try {
+        if (arra.size() > 0) {
             intent.putExtra(EXTRA_RESULT, "display");
 
             Set set = arra.entrySet();
             Iterator iterator = set.iterator();
             ContentValues cv = new ContentValues();
 
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
 
-                Map.Entry mentry = (Map.Entry)iterator.next();
-
-
-                String productId=(String)mentry.getKey();
-                String salePrice=(String)mentry.getValue();
-                long theid= Long.parseLong(productId);
+                Map.Entry mentry = (Map.Entry) iterator.next();
 
 
-             //   long _id = c.getLong((Long)productId);
+                String productId = (String) mentry.getKey();
+                String salePrice = (String) mentry.getValue();
+                long theid = Long.parseLong(productId);
+
+
+                //   long _id = c.getLong((Long)productId);
 
                 cv.put(ProductColumns._ID, productId);
 
 
-                cv.put(ProductColumns.SALEPRICE,salePrice);
-try {
-    mContext.getContentResolver().update(ProductProvider.Products.withId(theid), cv, null, null);
-    mContext.getContentResolver().update(ProductProvider.WishList.withId(theid), cv, null, null);
-}catch(Exception e){
-    Log.e("ERROOOOOR",e.getMessage());
-}
+                cv.put(ProductColumns.SALEPRICE, salePrice);
 
-//                cv.put(WishListColumns._ID,
-//                        c.getString(c.getColumnIndex(ProductColumns._ID)));
-//
-//
-//                cv.put(WishListColumns.SALEPRICE,
-//                        c.getString(c.getColumnIndex(ProductColumns.SALEPRICE)));
-//
-//
+                    mContext.getContentResolver().update(ProductProvider.Products.withId(theid), cv, null, null);
+                    mContext.getContentResolver().update(ProductProvider.WishList.withId(theid), cv, null, null);
+
 
                 DatabaseUtils.dumpCursor(c);
             }
 
 
-
-//            for(int i=0;i<arra.size();i++) {
-//                long itemId=(Long)arra.get(i);
-//               // mContext.getContentResolver().update(ProductProvider.Products.withId(itemId));
-//
-//
-////                ContentValues cv = new ContentValues();
-////                cv.put(NoteColumns.NOTE, note);
-////                cv.put(NoteColumns.STATUS, status);
-////                appContext.getContentResolver().update(Notes.withId(noteId), cv, null, null);
-//            }
-
-        }else{
-            intent.putExtra(EXTRA_RESULT,"hide");
+        } else {
+            intent.putExtra(EXTRA_RESULT, "hide");
         }
-//
 
-            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
-            manager.sendBroadcast(intent);
+        } catch (Exception e) {
+            //Log.e("ERROOOOOR", e.getMessage());
+        }
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
+        manager.sendBroadcast(intent);
 
-
-
-        // Send local broadcast, running Activities will be notified about the task.
 
         return GcmNetworkManager.RESULT_SUCCESS;
     }
-    public void showNotification(ProductDetail product){
+
+    public void showNotification(ProductDetail product) {
 
 
-
-
-        if(product.getSalePrice()!=null){
+        if (product.getSalePrice() != null) {
             arra.put(product.getId(), product.getSalePrice());
-            showMessage=true;
+            showMessage = true;
         }
 
-        Log.d("count", "cursor count: " + product.getId()+"price:"+product.getSalePrice());
+        Log.d("count", "cursor count: " + product.getId() + "price:" + product.getSalePrice());
 
 
     }

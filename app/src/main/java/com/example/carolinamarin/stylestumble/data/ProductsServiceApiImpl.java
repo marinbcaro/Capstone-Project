@@ -125,16 +125,22 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                     DATA.clear();
 
                     List<Product> contributors = response.body().products;
-                    for (Product contributor : contributors) {
-                        Brand h = contributor.getBrand();
-                        Image ima = contributor.getImage();
+                    for (Product productInfo : contributors) {
+                        Brand h = productInfo.getBrand();
+                        Image ima = productInfo.getImage();
+
                         String salePrice="0";
-                        if(contributor.getSalePrice()!=null){
-                            salePrice=contributor.getSalePrice();
+                        String unbranded="";
+                        if(productInfo.getSalePrice()!=null){
+                            salePrice=productInfo.getSalePrice();
+                        }
+
+                        if(productInfo.getUnbrandedName()!=null){
+                            unbranded=productInfo.getUnbrandedName();
                         }
 
                       //  addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
-                        Product product = new Product(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima,salePrice);
+                        Product product = new Product(productInfo.getId(), productInfo.getName(), productInfo.getName(), productInfo.getUrl(), h, productInfo.getPrice(), ima,salePrice,unbranded);
 
                         DATA.put(product.getId(), product);
                     }

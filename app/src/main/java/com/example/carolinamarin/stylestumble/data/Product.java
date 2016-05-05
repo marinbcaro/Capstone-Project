@@ -10,6 +10,7 @@ public final class Product {
     @Nullable
     private final String description;
     private final String name;
+    private final String unbrandedName;
     private final String url;
     public final Brand brand;
     private final Double price;
@@ -58,7 +59,7 @@ public final class Product {
 //
 //    }
 
-    public Product(@Nullable String mid,@Nullable String mdescription,String mname,String murl,Brand mbrand,Double mprice,Image mimage,String msalePrice) {
+    public Product(@Nullable String mid,@Nullable String mdescription,String mname,String murl,Brand mbrand,Double mprice,Image mimage,String msalePrice,String munBrandedName) {
         //   mId = UUID.randomUUID().toString();
         id=mid;
         description = mdescription;
@@ -68,6 +69,7 @@ public final class Product {
         price=mprice;
         image=mimage;
         salePrice=msalePrice;
+        unbrandedName=munBrandedName;
 
     }
 
@@ -105,6 +107,10 @@ public final class Product {
     @Nullable
     public String getSalePrice() {
         return salePrice;
+    }
+    @Nullable
+    public String getUnbrandedName() {
+        return unbrandedName;
     }
 
 

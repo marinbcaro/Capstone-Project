@@ -65,13 +65,15 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
             Paint p = new Paint();
             if (dX > 0) {
             /* Set your color for positive displacement */
-                p.setARGB(255, 255, 0, 0);
+              //  p.setARGB(255, 255, 0, 0);
+                p.setARGB(240, 0, 190, 0);
                 // Draw Rect with varying right side, equal to displacement dX
                 c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
                         (float) itemView.getBottom(), p);
             } else {
             /* Set your color for negative displacement */
-                p.setARGB(255, 0, 255, 0);
+            //    p.setARGB(255, 0, 255, 0);
+                p.setARGB(255, 255, 0, 0);
                 // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
                 c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
                         (float) itemView.getRight(), (float) itemView.getBottom(), p);

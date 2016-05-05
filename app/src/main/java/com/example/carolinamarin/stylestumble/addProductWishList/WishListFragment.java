@@ -9,13 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -123,10 +124,10 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         recyclerView.setAdapter(mListAdapter);
         //  recyclerView.setAdapter(mListAdapter);
 
-        int numColumns = 1;
+        int numColumns = 2;
         // recyclerView.setHasFixedSize(true);
-        //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
+      //  recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return root;
 
     }
@@ -168,9 +169,12 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             //   DatabaseUtils.dumpCursor(cursor);
-            viewHolder.title.setText(cursor.getString(
+
+            viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
 
+            viewHolder.price.setText(cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.PRICE)));
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
 
 //Log.d("URL",cursor.getString(
@@ -204,36 +208,39 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
         public class ViewHolder extends RecyclerView.ViewHolder  {
 
-            public TextView title;
+            public TextView name;
 
             public TextView description;
+            public TextView price;
             private ProductItemListener mItemListener;
             private ImageView image;
             private Button button;
-            private Button buttonDelete;
+            private ImageButton buttonDelete;
 
             public ViewHolder(View view, ProductItemListener listener) {
                 super(view);
                 mItemListener = listener;
-                title = (TextView) view.findViewById(R.id.product_detail_title);
+                name = (TextView) view.findViewById(R.id.product_name);
+
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) view.findViewById(R.id.product_image);
-                button=(Button)view.findViewById(R.id.view_item_wishlist);
-                button.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        Log.d("the view","id"+v.getId());
-                        int pos=getAdapterPosition();
-                        getCursor().moveToPosition(pos);
-                        int currentPosition = getCursor().getPosition();
-                        Cursor c = getCursor();
-                        c.moveToPosition(currentPosition);
-                        String id = c.getString(c.getColumnIndex(ProductColumns._ID));
-                        mItemListener.onProductClick(id);
-                    }
-                });
+                price=(TextView)view.findViewById(R.id.product_price);
+//                button=(Button)view.findViewById(R.id.view_item_wishlist);
+//                button.setOnClickListener(new View.OnClickListener() {
+//                    public void onClick(View v) {
+//                        Log.d("the view","id"+v.getId());
+//                        int pos=getAdapterPosition();
+//                        getCursor().moveToPosition(pos);
+//                        int currentPosition = getCursor().getPosition();
+//                        Cursor c = getCursor();
+//                        c.moveToPosition(currentPosition);
+//                        String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+//                        mItemListener.onProductClick(id);
+//                    }
+//                });
 
-                buttonDelete=(Button)view.findViewById(R.id.delete_item_wishlist);
+                buttonDelete=(ImageButton)view.findViewById(R.id.delete_item_wishlist);
               //  buttonDelete.setOnClickListener(this);
                 buttonDelete.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {

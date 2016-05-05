@@ -518,6 +518,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             //   DatabaseUtils.dumpCursor(cursor);
             viewHolder.title.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
+          //  viewHolder.brand.setText(cursor.getString(cursor.getColumnIndex(ProductColumns.BRAND)));
 
             Glide.with(viewHolder.itemView.getContext()).load(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.URL)))
@@ -553,6 +554,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             public TextView description;
             private ProductItemListener mItemListener;
             private ImageView image;
+           // private TextView brand;
 
             public ViewHolder(View view, ProductItemListener listener) {
                 super(view);
@@ -561,6 +563,8 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) view.findViewById(R.id.product_image);
+             //   brand=(TextView) view.findViewById(R.id.product_brand);
+
                 itemView.setOnClickListener(this);
             }
 
@@ -610,31 +614,37 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
 
             if (orientation == 32) {
+try {
+    cv.put(WishListColumns._ID,
+            c.getString(c.getColumnIndex(ProductColumns._ID)));
+    cv.put(WishListColumns.NAME,
+            c.getString(c.getColumnIndex(ProductColumns.NAME)));
 
-                cv.put(WishListColumns._ID,
-                        c.getString(c.getColumnIndex(ProductColumns._ID)));
-                cv.put(WishListColumns.NAME,
-                        c.getString(c.getColumnIndex(ProductColumns.NAME)));
+    cv.put(WishListColumns.DESCRIPTION,
+            c.getString(c.getColumnIndex(ProductColumns.DESCRIPTION)));
 
-                cv.put(WishListColumns.DESCRIPTION,
-                        c.getString(c.getColumnIndex(ProductColumns.DESCRIPTION)));
+    cv.put(WishListColumns.BRAND,
+            c.getString(c.getColumnIndex(ProductColumns.BRAND)));
 
-                cv.put(WishListColumns.BRAND,
-                        c.getString(c.getColumnIndex(ProductColumns.BRAND)));
+    cv.put(WishListColumns.PRICE,
+            c.getString(c.getColumnIndex(ProductColumns.PRICE)));
+    cv.put(WishListColumns.SALEPRICE,
+            c.getString(c.getColumnIndex(ProductColumns.SALEPRICE)));
 
-                cv.put(WishListColumns.PRICE,
-                        c.getString(c.getColumnIndex(ProductColumns.PRICE)));
-                cv.put(WishListColumns.SALEPRICE,
-                        c.getString(c.getColumnIndex(ProductColumns.SALEPRICE)));
+    cv.put(WishListColumns.URL,
+            c.getString(c.getColumnIndex(ProductColumns.URL)));
 
-                cv.put(WishListColumns.URL,
-                        c.getString(c.getColumnIndex(ProductColumns.URL)));
+    mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+            null, null);
+    mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
+            cv);
+}catch(Exception e){
+    if(e.getMessage().contains("UNIQUE constraint failed")){
 
-                mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
-                        null, null);
-                mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
-                        cv);
-
+        Toast.makeText(mContext, "This product is already on your wish list", Toast.LENGTH_SHORT).show();
+    }
+    Log.d("message",e.getMessage());
+}
             } else {
                 mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
                         null, null);

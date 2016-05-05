@@ -30,5 +30,8 @@ public interface ProductColumns {
     @DataType(DataType.Type.REAL) @NotNull
     public static final String SALEPRICE = "salePrice";
 
+    @DataType(DataType.Type.TEXT)
+    public static final String UNBRANDEDNAME = "unbrandedName";
+
 
 }
