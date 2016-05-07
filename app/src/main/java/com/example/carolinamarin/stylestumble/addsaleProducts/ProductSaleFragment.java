@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -179,8 +180,10 @@ public void showNotification(ProductDetail p){
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_sale_list);
         mListAdapter = new ProductSaleAdapter(getActivity(), null,mItemListener);
         recyclerView.setAdapter(mListAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+       // recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        int numColumns = 2;
+        // recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
        return root;
     }
     ProductItemListener mItemListener = new ProductItemListener() {
@@ -220,9 +223,11 @@ public void showNotification(ProductDetail p){
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             //   DatabaseUtils.dumpCursor(cursor);
-            viewHolder.title.setText(cursor.getString(
+            viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
 
+            viewHolder.price.setText(cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.PRICE)));
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
 
 //Log.d("URL",cursor.getString(
@@ -287,18 +292,31 @@ public void showNotification(ProductDetail p){
             public TextView description;
          //   private ProductItemListener mItemListener;
             private ImageView image;
+            private TextView name;
+            private TextView price;
 
 
             public ViewHolder(View itemView,ProductItemListener listener) {
                 super(itemView);
 
                 mItemListener = listener;
-                title = (TextView) itemView.findViewById(R.id.product_detail_title);
+
+
+
+
+                name = (TextView) itemView.findViewById(R.id.product_sale_name);
+
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) itemView.findViewById(R.id.product_image);
+                price=(TextView)itemView.findViewById(R.id.product_sale_price);
+
+
+
+
+
                 //   itemView.setOnClickListener(this);
-               Button button=(Button)itemView.findViewById(R.id.view_product_sale);
+               ImageButton button=(ImageButton)itemView.findViewById(R.id.view_product_sale);
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         Log.d("the view","id"+v.getId());

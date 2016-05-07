@@ -30,4 +30,6 @@ public interface WishListColumns {
     @DataType(DataType.Type.REAL) @NotNull
     public static final String SALEPRICE = "salePrice";
 
+
+
 }

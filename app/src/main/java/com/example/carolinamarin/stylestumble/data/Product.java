@@ -71,6 +71,7 @@ public final class Product {
         salePrice=msalePrice;
         unbrandedName=munBrandedName;
 
+
     }
 
 //
@@ -112,6 +113,7 @@ public final class Product {
     public String getUnbrandedName() {
         return unbrandedName;
     }
+
 
 
 }

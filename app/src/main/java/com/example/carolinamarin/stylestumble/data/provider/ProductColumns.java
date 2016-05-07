@@ -34,4 +34,6 @@ public interface ProductColumns {
     public static final String UNBRANDEDNAME = "unbrandedName";
 
 
+
+
 }

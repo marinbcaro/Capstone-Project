@@ -546,6 +546,81 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             return mProducts.get(position);
         }
 
+        public void showProductDetails(int pos){
+
+            getCursor().moveToPosition(pos);
+            int currentPosition = getCursor().getPosition();
+            Cursor c = getCursor();
+            c.moveToPosition(currentPosition);
+
+            String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+
+            mItemListener.onProductClick(id);
+        }
+
+        public void deleteProduct(int position){
+            long cursorId = getItemId(position);
+            Cursor c = getCursor();
+
+            mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+                    null, null);
+
+            if (c.getCount() == 1) {
+                String catId = cat_id;
+                offset++;
+                int totalPages = offset * 50;
+                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
+            }
+        }
+
+         public void saveProductWishList(int position){
+
+             long cursorId = getItemId(position);
+             Cursor c = getCursor();
+             ContentValues cv = new ContentValues();
+
+
+
+                 try {
+                     cv.put(WishListColumns._ID,
+                             c.getString(c.getColumnIndex(ProductColumns._ID)));
+                     cv.put(WishListColumns.NAME,
+                             c.getString(c.getColumnIndex(ProductColumns.NAME)));
+
+                     cv.put(WishListColumns.DESCRIPTION,
+                             c.getString(c.getColumnIndex(ProductColumns.DESCRIPTION)));
+
+                     cv.put(WishListColumns.BRAND,
+                             c.getString(c.getColumnIndex(ProductColumns.BRAND)));
+
+                     cv.put(WishListColumns.PRICE,
+                             c.getString(c.getColumnIndex(ProductColumns.PRICE)));
+                     cv.put(WishListColumns.SALEPRICE,
+                             c.getString(c.getColumnIndex(ProductColumns.SALEPRICE)));
+
+
+                     cv.put(WishListColumns.URL,
+                             c.getString(c.getColumnIndex(ProductColumns.URL)));
+
+                     mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
+                             null, null);
+                     mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
+                             cv);
+                 }catch(Exception e){
+                     if(e.getMessage().contains("UNIQUE constraint failed")){
+
+                         Toast.makeText(mContext, "This product is already on your wish list", Toast.LENGTH_SHORT).show();
+                     }
+                     Log.d("message",e.getMessage());
+                 }
+
+             if (c.getCount() == 1) {
+                 String catId = cat_id;
+                 offset++;
+                 int totalPages = offset * 50;
+                 mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
+             }
+         }
 
         public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ItemTouchHelperViewHolder {
 
@@ -554,6 +629,8 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
             public TextView description;
             private ProductItemListener mItemListener;
             private ImageView image;
+            private ImageView delete;
+            private ImageView save;
            // private TextView brand;
 
             public ViewHolder(View view, ProductItemListener listener) {
@@ -563,9 +640,52 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) view.findViewById(R.id.product_image);
+
+                delete=(ImageView)view.findViewById(R.id.product_image_dissmiss);
+                save =(ImageView)view.findViewById(R.id.product_image_save);
              //   brand=(TextView) view.findViewById(R.id.product_brand);
 
-                itemView.setOnClickListener(this);
+                //itemView.setOnClickListener(this);
+
+                image.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        showProductDetails(pos);
+
+                    }
+                    });
+
+                title.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        showProductDetails(pos);
+
+                    }
+                });
+                delete.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        deleteProduct(pos);
+
+                    }
+                });
+
+                save.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        saveProductWishList(pos);
+
+                    }
+                });
+
+
+
+
+
             }
 
             @Override
@@ -614,40 +734,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
 
             if (orientation == 32) {
-try {
-    cv.put(WishListColumns._ID,
-            c.getString(c.getColumnIndex(ProductColumns._ID)));
-    cv.put(WishListColumns.NAME,
-            c.getString(c.getColumnIndex(ProductColumns.NAME)));
-
-    cv.put(WishListColumns.DESCRIPTION,
-            c.getString(c.getColumnIndex(ProductColumns.DESCRIPTION)));
-
-    cv.put(WishListColumns.BRAND,
-            c.getString(c.getColumnIndex(ProductColumns.BRAND)));
-
-    cv.put(WishListColumns.PRICE,
-            c.getString(c.getColumnIndex(ProductColumns.PRICE)));
-    cv.put(WishListColumns.SALEPRICE,
-            c.getString(c.getColumnIndex(ProductColumns.SALEPRICE)));
-
-    cv.put(WishListColumns.URL,
-            c.getString(c.getColumnIndex(ProductColumns.URL)));
-
-    mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
-            null, null);
-    mContext.getContentResolver().insert(ProductProvider.WishList.withId(cursorId),
-            cv);
-}catch(Exception e){
-    if(e.getMessage().contains("UNIQUE constraint failed")){
-
-        Toast.makeText(mContext, "This product is already on your wish list", Toast.LENGTH_SHORT).show();
-    }
-    Log.d("message",e.getMessage());
-}
+                saveProductWishList(position);
             } else {
-                mContext.getContentResolver().delete(ProductProvider.Products.withId(cursorId),
-                        null, null);
+              deleteProduct(position);
             }
 
 

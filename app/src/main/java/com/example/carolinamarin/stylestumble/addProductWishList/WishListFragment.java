@@ -173,8 +173,6 @@ public class WishListFragment extends Fragment implements WishListContract.View,
             viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
 
-            viewHolder.price.setText(cursor.getString(
-                    cursor.getColumnIndex(ProductColumns.PRICE)));
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
 
 //Log.d("URL",cursor.getString(
