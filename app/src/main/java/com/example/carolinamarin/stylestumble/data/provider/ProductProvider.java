@@ -57,6 +57,7 @@ public class ProductProvider {
                 where=WishListColumns.SALEPRICE+" > 0")
         public static final Uri PRODUCTSALE = buildUri("productssale");
 
+
         @InexactContentUri(
                 name = "WISHLIST_ID",
                 path = "wishlist/#",

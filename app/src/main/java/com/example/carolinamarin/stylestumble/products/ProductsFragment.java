@@ -24,7 +24,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
@@ -51,9 +51,9 @@ import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
 import com.example.carolinamarin.stylestumble.data.provider.WishListColumns;
 import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
 import com.example.carolinamarin.stylestumble.util.CursorRecyclerViewAdapter;
+import com.example.carolinamarin.stylestumble.util.EndlessRecyclerViewScrollListener;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperViewHolder;
-import com.example.carolinamarin.stylestumble.util.SimpleItemTouchHelperCallback;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.OneoffTask;
 
@@ -344,12 +344,14 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                     getContext().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
                             null, null);
                 //}
+                offset=0;
                 mActionsListener.loadProducts(catId, query, offset, true);
                 // Reset SearchView
                 searchView.clearFocus();
                 searchView.setQuery("", false);
                 searchView.setIconified(true);
                 searchItem.collapseActionView();
+
                 // Set activity title to search query
                 //  BookListActivity.this.setTitle(query);
                 return true;
@@ -393,7 +395,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         }
 
         try {
-            getActivity().getContentResolver().applyBatch(ProductProvider.AUTHORITY, batchOperations);
+            getContext().getContentResolver().applyBatch(ProductProvider.AUTHORITY, batchOperations);
         } catch (RemoteException | OperationApplicationException e) {
             Log.e("ERROR Provider", "Error applying batch insert", e);
         }
@@ -425,7 +427,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
         // recyclerView.setHasFixedSize(true);
         //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
+
 
 
          swipeRefreshLayout =
@@ -434,47 +438,75 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 ContextCompat.getColor(getActivity(), R.color.colorPrimary),
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                String catId = getArguments().getString(ARGUMENT_CAT_ID);
+//                offset++;
+//                int totalPages = offset * 50;
+//                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
+//
+//
+//
+//            }
+//        });
+        swipeRefreshLayout.setEnabled(false);
+        final GridLayoutManager linearLayoutManager = new GridLayoutManager(getContext(),2);
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                int totalItemCount = linearLayoutManager.getItemCount();
+//                int visibleItemCount = linearLayoutManager.getChildCount();
+//                int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+//                boolean enable=false;
+//
+//                if(totalItemCount>0){
+//                    // check if the first item of the list is visible
+//                    boolean firstItemVisible = visibleItemCount == 3;
+//                    // check if the top of the first item is visible
+//                    boolean topOfFirstItemVisible = firstVisibleItem== 0;
+//                    // enabling or disabling the refresh layout
+//                    enable = firstItemVisible && topOfFirstItemVisible;
+//                    swipeRefreshLayout.setEnabled(enable);
+//
+//                }
+//            }
+//        });
+
+
+        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
-            public void onRefresh() {
+            public void onLoadMore(int page, int totalItemsCount) {
+
+
+                swipeRefreshLayout.setEnabled(false);
+                // fetch data here
                 String catId = getArguments().getString(ARGUMENT_CAT_ID);
                 offset++;
                 int totalPages = offset * 50;
-                mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
 
+                if(totalPages<=500) {
+                    mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
 
+                    // update the adapter, saving the last known size
+                    int curSize = mListAdapter.getItemCount();
 
-            }
-        });
-
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int totalItemCount = linearLayoutManager.getItemCount();
-                int visibleItemCount = linearLayoutManager.getChildCount();
-                int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
-                boolean enable=false;
-
-                if(totalItemCount>0){
-                    // check if the first item of the list is visible
-                    boolean firstItemVisible = visibleItemCount == 3;
-                    // check if the top of the first item is visible
-                    boolean topOfFirstItemVisible = firstVisibleItem== 0;
-                    // enabling or disabling the refresh layout
-                    enable = firstItemVisible && topOfFirstItemVisible;
-                    swipeRefreshLayout.setEnabled(enable);
-
+                    // for efficiency purposes, only notify the adapter of what elements that got changed
+                    // curSize will equal to the index of the first element inserted because the list is 0-indexed
+                    mListAdapter.notifyItemRangeInserted(curSize, totalPages - 1);
                 }
+
             }
         });
 
 
-                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mListAdapter);
+        recyclerView.setLayoutManager(linearLayoutManager);
 
-        mItemTouchHelper = new ItemTouchHelper(callback);
-
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+//        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mListAdapter);
+//
+//        mItemTouchHelper = new ItemTouchHelper(callback);
+//
+//        mItemTouchHelper.attachToRecyclerView(recyclerView);
 
         return root;
 
@@ -516,8 +548,24 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             //   DatabaseUtils.dumpCursor(cursor);
-            viewHolder.title.setText(cursor.getString(
+            viewHolder.price.setText("");
+            viewHolder.salePrice.setText("");
+
+
+            viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
+            viewHolder.price.setText("$"+cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.PRICE)));
+            if(!cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.SALEPRICE)).equals("0")){
+
+                viewHolder.price.setText("Reg $"+cursor.getString(
+                        cursor.getColumnIndex(ProductColumns.PRICE)));
+                viewHolder.salePrice.setVisibility(View.VISIBLE);
+
+                viewHolder.salePrice.setText("Sale $"+cursor.getString(
+                        cursor.getColumnIndex(ProductColumns.SALEPRICE)));
+            }
           //  viewHolder.brand.setText(cursor.getString(cursor.getColumnIndex(ProductColumns.BRAND)));
 
             Glide.with(viewHolder.itemView.getContext()).load(cursor.getString(
@@ -614,35 +662,35 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                      Log.d("message",e.getMessage());
                  }
 
-             if (c.getCount() == 1) {
-                 String catId = cat_id;
-                 offset++;
-                 int totalPages = offset * 50;
-                 mActionsListener.loadProducts(catId, searchQuery, totalPages, true);
-             }
+
          }
 
         public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ItemTouchHelperViewHolder {
 
-            public TextView title;
+            public TextView name;
 
             public TextView description;
             private ProductItemListener mItemListener;
             private ImageView image;
             private ImageView delete;
             private ImageView save;
+            private TextView price;
+            private TextView salePrice;
            // private TextView brand;
 
             public ViewHolder(View view, ProductItemListener listener) {
                 super(view);
                 mItemListener = listener;
-                title = (TextView) view.findViewById(R.id.product_detail_title);
+                name = (TextView) view.findViewById(R.id.product_name);
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) view.findViewById(R.id.product_image);
 
-                delete=(ImageView)view.findViewById(R.id.product_image_dissmiss);
-                save =(ImageView)view.findViewById(R.id.product_image_save);
+              //  delete=(ImageView)view.findViewById(R.id.product_image_dissmiss);
+                save =(ImageView)view.findViewById(R.id.save_to_wishlist);
+                price=(TextView)view.findViewById(R.id.product_price);
+                salePrice=(TextView)view.findViewById(R.id.product_salePrice1);
+               // salePrice.setVisibility(View.VISIBLE);
              //   brand=(TextView) view.findViewById(R.id.product_brand);
 
                 //itemView.setOnClickListener(this);
@@ -656,7 +704,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                     }
                     });
 
-                title.setOnClickListener(new View.OnClickListener() {
+                name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
 
                         int pos=getAdapterPosition();
@@ -664,15 +712,15 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
                     }
                 });
-                delete.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-
-                        int pos=getAdapterPosition();
-                        deleteProduct(pos);
-
-                    }
-                });
-
+//                delete.setOnClickListener(new View.OnClickListener() {
+//                    public void onClick(View v) {
+//
+//                        int pos=getAdapterPosition();
+//                        deleteProduct(pos);
+//
+//                    }
+//                });
+//
                 save.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
 

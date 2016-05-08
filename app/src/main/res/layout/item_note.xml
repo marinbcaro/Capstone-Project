@@ -21,6 +21,13 @@
     android:layout_height="wrap_content"
     card_view:cardUseCompatPadding="true">
 
+    <com.example.carolinamarin.stylestumble.util.ThreeTwoImageView
+        android:layout_width="match_parent"
+        android:background="@drawable/girl"
+        android:scaleType="centerCrop"
+        android:layout_height="0dp" />
+
+
     <LinearLayout
         style="@style/Widget.CardContent"
         android:layout_width="match_parent"

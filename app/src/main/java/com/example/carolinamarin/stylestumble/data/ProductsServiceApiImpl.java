@@ -134,7 +134,6 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                         if(productInfo.getSalePrice()!=null){
                             salePrice=productInfo.getSalePrice();
                         }
-
                         if(productInfo.getUnbrandedName()!=null){
                             unbranded=productInfo.getUnbrandedName();
                         }

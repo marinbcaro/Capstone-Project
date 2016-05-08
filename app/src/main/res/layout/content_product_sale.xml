@@ -21,7 +21,7 @@
 
 
     <FrameLayout
-        android:id="@+id/contentWishList"
+        android:id="@+id/contentProductSale"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

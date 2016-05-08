@@ -35,6 +35,7 @@ public class ProductSaleActivity extends AppCompatActivity {
         if (null == savedInstanceState) {
             initFragment(ProductSaleFragment.newInstance());
         }
+
     }
     public void onCheckboxClicked(View view) {
         // Is the view now checked?
@@ -50,8 +51,11 @@ public class ProductSaleActivity extends AppCompatActivity {
     private void initFragment(Fragment detailFragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.contentWishList, detailFragment);
+        transaction.add(R.id.contentProductSale, detailFragment);
         transaction.commit();
     }
+
+
+
 
 }

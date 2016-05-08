@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 
 import com.example.carolinamarin.stylestumble.R;
@@ -35,6 +36,9 @@ public class WishListActivity extends AppCompatActivity {
             initFragment(WishListFragment.newInstance());
         }
     }
+
+
+
 
     private void initFragment(Fragment detailFragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -124,6 +124,8 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         recyclerView.setAdapter(mListAdapter);
         //  recyclerView.setAdapter(mListAdapter);
 
+        getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+
         int numColumns = 2;
         // recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
@@ -172,6 +174,8 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
             viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
+            viewHolder.price.setText("$" + cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.PRICE)));
 
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
 
@@ -210,6 +214,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
             public TextView description;
             public TextView price;
+
             private ProductItemListener mItemListener;
             private ImageView image;
             private Button button;
@@ -224,6 +229,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
                 image = (ImageView) view.findViewById(R.id.product_image);
                 price=(TextView)view.findViewById(R.id.product_price);
+
 //                button=(Button)view.findViewById(R.id.view_item_wishlist);
 //                button.setOnClickListener(new View.OnClickListener() {
 //                    public void onClick(View v) {
@@ -253,7 +259,10 @@ public class WishListFragment extends Fragment implements WishListContract.View,
                         mContext.getContentResolver().delete(ProductProvider.WishList.withId(cursorId),
                                 null, null);
 
-                        mListAdapter.notifyItemRemoved(currentPosition);
+                       // mListAdapter.notifyItemRemoved(currentPosition);
+
+                        notifyItemRemoved(currentPosition);
+
                       //  mItemListener.onProductClick(id);
                     }
                 });

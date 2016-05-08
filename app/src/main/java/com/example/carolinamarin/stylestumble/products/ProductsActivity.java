@@ -13,7 +13,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toolbar;
 
 import com.example.carolinamarin.stylestumble.R;
@@ -38,6 +40,8 @@ public class ProductsActivity extends AppCompatActivity {
     private Context mContext;
     private BroadcastReceiver mReceiver;
     private  String categoryId;
+    private Menu menu;
+    private SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,7 @@ public class ProductsActivity extends AppCompatActivity {
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_launcher);
         setActionBar(toolbar);
         //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setVisibility(View.VISIBLE);
@@ -106,12 +111,24 @@ public class ProductsActivity extends AppCompatActivity {
 
 
 
-    private void setUpViewPager(CustomViewPager viewPager) {
-        TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//       super.onCreateOptionsMenu(menu);
+//        this.menu = menu;
+//        inflater.inflate(R.menu.menu_products, menu);
+//
+//        final MenuItem searchItem = menu.findItem(R.id.search);
+//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+//        return true;
+//    }
+    private void setUpViewPager(final CustomViewPager viewPager) {
+       final  TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(ProductsFragment.newInstance(categoryId), "Hot Products");
-        adapter.addFragment(new WishListFragment(), "WishList");
-        adapter.addFragment(new ProductSaleFragment(), "Notifications");
+       adapter.addFragment(WishListFragment.newInstance(), "WishList");
+        adapter.addFragment(ProductSaleFragment.newInstance(), "Sales");
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -121,11 +138,28 @@ public class ProductsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+
+
                 if(position==0){
                     getActionBar().show();
-                }else{
+                }if(position==1){
+
+                  //  menu.findItem(R.id.search).setVisible(false);
                     getActionBar().hide();
                 }
+                if(position==2) {
+                  //  getActionBar().hide();
+                    //MenuItem item = menu.findItem(R.id.addAction);
+                    adapter.getItem(position).onResume();
+                }
+//
+////                    FragmentManager fragmentManager = getSupportFragmentManager();
+////                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+////                    transaction.replace(R.id.contentProductSale, ProductSaleFragment.newInstance());
+////                    transaction.commit();
+//                }
+
+
             }
 
             @Override

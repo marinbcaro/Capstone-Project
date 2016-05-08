@@ -49,24 +49,30 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
     private ProductSaleAdapter mListAdapter;
     private static ProductSaleContract.UserActionsListener mActionsListener;
     public ProductSaleFragment() {
+
     }
 
 
     public static ProductSaleFragment newInstance() {
         ProductSaleFragment fragment = new ProductSaleFragment();
+
         return fragment;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         mActionsListener = new ProductSalePresenter(Injection.provideProductsRepository(), this);
-//        Cursor c = getActivity().getContentResolver().query(ProductProvider.Products.PRODUCTS,
-//                null, null, null, null);
-//        Log.i("count", "cursor count: " + c.getCount());
-//        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
+        Cursor c = getActivity().getContentResolver().query(ProductProvider.WishList.PRODUCTSALE,
+        null, null, null, null);
+        Log.i("count", "cursor count: " + c.getCount());
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
+
     }
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -86,7 +92,10 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
 
 
     }
-
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
     @Override
     public void showDetailProduct(String productId) {
         Intent intent = new Intent(getContext(), ProductDetailActivity.class);
@@ -124,6 +133,9 @@ public void showNotification(ProductDetail p){
 
 
         Button save=(Button)root.findViewById(R.id.save_notification);
+
+        RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_sale_list);
+        mListAdapter = new ProductSaleAdapter(getActivity(), null,mItemListener);
 
         Cursor c = getContext().getContentResolver().query(ProductProvider.UserPreferences.USERPREFERENCES,
                 null, null, null, null);
@@ -177,8 +189,9 @@ public void showNotification(ProductDetail p){
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_sale_list);
-        mListAdapter = new ProductSaleAdapter(getActivity(), null,mItemListener);
+
+
+
         recyclerView.setAdapter(mListAdapter);
        // recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         int numColumns = 2;
@@ -226,8 +239,15 @@ public void showNotification(ProductDetail p){
             viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
 
-            viewHolder.price.setText(cursor.getString(
+            viewHolder.price.setText("Before $"+cursor.getString(
                     cursor.getColumnIndex(ProductColumns.PRICE)));
+            if(cursor.getString(cursor.getColumnIndex(ProductColumns.SALEPRICE))!=null){
+                viewHolder.salePrice.setText("Sale Price $"+cursor.getString(
+                        cursor.getColumnIndex(ProductColumns.SALEPRICE)));
+            }else{
+                viewHolder.salePrice.setText("");
+            }
+
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
 
 //Log.d("URL",cursor.getString(
@@ -294,6 +314,7 @@ public void showNotification(ProductDetail p){
             private ImageView image;
             private TextView name;
             private TextView price;
+            private TextView salePrice;
 
 
             public ViewHolder(View itemView,ProductItemListener listener) {
@@ -309,7 +330,8 @@ public void showNotification(ProductDetail p){
                 //      description = (TextView) itemView.findViewById(R.id.product_detail_description);
 
                 image = (ImageView) itemView.findViewById(R.id.product_image);
-                price=(TextView)itemView.findViewById(R.id.product_sale_price);
+                price=(TextView)itemView.findViewById(R.id.product_regular_price);
+                salePrice=(TextView)itemView.findViewById(R.id.product_sale_price);
 
 
 

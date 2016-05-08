@@ -189,7 +189,7 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
     public void showCategories(List<Category> categories){
 
         ArrayList<Category> cateList=new ArrayList<>();
-        Category cat2=new Category("womens-clothes","Women", "womens-clothes");
+        Category cat2=new Category("womens-fashion","Women", "womens-fashion");
         Category cat=new Category("mens-clothes","Men", "mens-clothes");
         Category cat3=new Category("kids-and-baby","Kids", "kids-and-baby");
 
@@ -228,6 +228,7 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
 
             viewHolder.title.setText(category.getDescription());
             viewHolder.description.setText(category.getDescription());
+
         }
 
         public void replaceData(List<Category> categories) {
@@ -260,6 +261,8 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
                 mItemListener = listener;
                 title = (TextView) itemView.findViewById(R.id.category_detail_title);
                 description = (TextView) itemView.findViewById(R.id.category_detail_description);
+
+
                 itemView.setOnClickListener(this);
             }
 
