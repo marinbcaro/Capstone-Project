@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,7 +46,7 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
 
 
     private static final int CURSOR_LOADER_ID = 0;
-    private ProductSaleAdapter mListAdapter;
+    private static  ProductSaleAdapter mListAdapter;
     private static ProductSaleContract.UserActionsListener mActionsListener;
     public ProductSaleFragment() {
 
@@ -96,12 +96,14 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
     public void showDetailProduct(String productId) {
         Intent intent = new Intent(getContext(), ProductDetailActivity.class);
         intent.putExtra(ProductDetailActivity.PRODUCT_ID, productId);
         startActivity(intent);
     }
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mListAdapter.swapCursor(null);
@@ -125,7 +127,7 @@ public void showNotification(ProductDetail p){
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View root=  inflater.inflate(R.layout.fragment_product_sale, container, false);
+       final View root=  inflater.inflate(R.layout.fragment_product_sale, container, false);
 
 
 
@@ -168,8 +170,6 @@ public void showNotification(ProductDetail p){
                 ContentValues cv = new ContentValues();
                 int value=0;
                 if(checkboxvariable.isChecked()){
-
-
                     value = 1;
                     cv.put(PreferenceColumns.SHOWNOTIFICATION, value);
                     Log.d("message", "checked");
@@ -180,7 +180,9 @@ public void showNotification(ProductDetail p){
                     Log.d("message", "NOT checked");
 
                 }
-                Log.d("the value","val"+value);
+                Log.d("the value", "val" + value);
+             Snackbar.make(root, "Settings saved", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
                 try {
                     getContext().getContentResolver().update(ProductProvider.UserPreferences.USERPREFERENCES, cv, null, null);
                 }catch (Exception e){
@@ -236,16 +238,25 @@ public void showNotification(ProductDetail p){
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             //   DatabaseUtils.dumpCursor(cursor);
+
+            viewHolder.price.setText("");
+            viewHolder.salePrice.setText("");
             viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
 
-            viewHolder.price.setText("Before $"+cursor.getString(
+            viewHolder.price.setText("$" + cursor.getString(
                     cursor.getColumnIndex(ProductColumns.PRICE)));
-            if(cursor.getString(cursor.getColumnIndex(ProductColumns.SALEPRICE))!=null){
-                viewHolder.salePrice.setText("Sale Price $"+cursor.getString(
+
+
+            if(!cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.SALEPRICE)).equals("0")){
+
+                viewHolder.price.setText("Reg $"+cursor.getString(
+                        cursor.getColumnIndex(ProductColumns.PRICE)));
+                viewHolder.salePrice.setVisibility(View.VISIBLE);
+
+                viewHolder.salePrice.setText("Sale $"+cursor.getString(
                         cursor.getColumnIndex(ProductColumns.SALEPRICE)));
-            }else{
-                viewHolder.salePrice.setText("");
             }
 
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
@@ -257,6 +268,18 @@ public void showNotification(ProductDetail p){
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(viewHolder.image);
 
+        }
+
+        public void showProductDetails(int pos){
+
+            getCursor().moveToPosition(pos);
+            int currentPosition = getCursor().getPosition();
+            Cursor c = getCursor();
+            c.moveToPosition(currentPosition);
+
+            String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+
+            mItemListener.onProductClick(id);
         }
 
         @Override
@@ -336,21 +359,25 @@ public void showNotification(ProductDetail p){
 
 
 
-
-                //   itemView.setOnClickListener(this);
-               ImageButton button=(ImageButton)itemView.findViewById(R.id.view_product_sale);
-                button.setOnClickListener(new View.OnClickListener() {
+                image.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        Log.d("the view","id"+v.getId());
+
                         int pos=getAdapterPosition();
-                        getCursor().moveToPosition(pos);
-                        int currentPosition = getCursor().getPosition();
-                        Cursor c = getCursor();
-                        c.moveToPosition(currentPosition);
-                        String id = c.getString(c.getColumnIndex(ProductColumns._ID));
-                        mItemListener.onProductClick(id);
+                        showProductDetails(pos);
+
                     }
                 });
+
+                name.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        showProductDetails(pos);
+
+                    }
+                });
+
+
 
             }
 

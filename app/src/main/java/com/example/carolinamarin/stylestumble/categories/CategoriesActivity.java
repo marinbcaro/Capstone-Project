@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -27,15 +26,7 @@ public class CategoriesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
-
-        setSupportActionBar(toolbarTop);
-
-
-        ((StyleStumbleApplication)getApplication()).startTracking();
-        loadGTMContainer();
-//
-//        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+        //        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 //        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
 //            @Override
 //            public boolean onMenuItemClick(MenuItem item) {

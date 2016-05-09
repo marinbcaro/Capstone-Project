@@ -17,13 +17,13 @@ public final class Category {
     public final String name;
 
 
+
 //    public Category(@Nullable String description) {
 //        this(description, null);
 //    }
 
     public Category(@Nullable String id,@Nullable String description,String mname) {
         mId = UUID.randomUUID().toString();
-
         mDescription = description;
         name=mname;
 

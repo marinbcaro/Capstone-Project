@@ -1,10 +1,8 @@
 package com.example.carolinamarin.stylestumble.productdetail;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -32,6 +30,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
 
     private TextView mDetailDescription;
     private TextView mDetailPrice;
+    private TextView mDetailSalePrice;
     private TextView mDetailBrand;
     private TextView mDetailRetailer;
 
@@ -120,8 +119,9 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
         View root = inflater.inflate(R.layout.fragment_product_detail, container, false);
 
 
-       mDetailTitle = (TextView) root.findViewById(R.id.note_detail_title);
+       mDetailTitle = (TextView) root.findViewById(R.id.product_detail_title);
         mDetailPrice = (TextView) root.findViewById(R.id.product_detail_price);
+        mDetailSalePrice = (TextView) root.findViewById(R.id.product_detail_sale_price);
         mDetailDescription = (TextView) root.findViewById(R.id.note_detail_description);
        // mDetailBrand = (TextView) root.findViewById(R.id.product_detail_brand);
         mDetailRetailer = (TextView) root.findViewById(R.id.product_detail_retailer);
@@ -149,18 +149,18 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mDetailImage);
 
-
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) getActivity().findViewById(R.id.collapsing_toolbar);
-
-        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(0, 0, 0));
-
-
-
-
-        collapsingToolbar.setTitle(title);
-        collapsingToolbar.setExpandedTitleColor(00000000);
-        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(0, 0, 0));
+//
+//        CollapsingToolbarLayout collapsingToolbar =
+//                (CollapsingToolbarLayout) getActivity().findViewById(R.id.collapsing_toolbar);
+//
+//        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(1, 1, 1));
+//
+//
+//
+//
+//        collapsingToolbar.setTitle(title);
+//        collapsingToolbar.setExpandedTitleColor(111);
+//        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(1, 1, 1));
 
         mDetailTitle.setText(title);
 
@@ -179,9 +179,12 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     }
 
     @Override
-    public void showPrice(Double price) {
+    public void showPrice(Double price, String salePrice) {
 
-        mDetailPrice.setText(price.toString());
+        if(!salePrice.equals("0")){
+            mDetailSalePrice.setText("Sale $"+salePrice);
+        }
+        mDetailPrice.setText("$"+price.toString());
     }
 
     @Override

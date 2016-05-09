@@ -132,6 +132,7 @@ configurations.compile.dependencies.each { compileDependency ->
 }
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

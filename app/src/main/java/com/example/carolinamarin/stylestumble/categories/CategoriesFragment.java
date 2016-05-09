@@ -2,10 +2,13 @@ package com.example.carolinamarin.stylestumble.categories;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +20,7 @@ import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Category;
 import com.example.carolinamarin.stylestumble.products.ProductsActivity;
+import com.example.carolinamarin.stylestumble.util.ThreeTwoImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +79,7 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCategoryAdapter = new CategoriesAdapter(new ArrayList<Category>(0), mItemListener);
+        mCategoryAdapter = new CategoriesAdapter(getActivity(),new ArrayList<Category>(0), mItemListener);
 //        if (getArguments() != null) {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
@@ -189,13 +193,13 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
     public void showCategories(List<Category> categories){
 
         ArrayList<Category> cateList=new ArrayList<>();
-        Category cat2=new Category("womens-fashion","Women", "womens-fashion");
-        Category cat=new Category("mens-clothes","Men", "mens-clothes");
-        Category cat3=new Category("kids-and-baby","Kids", "kids-and-baby");
+        Category women=new Category("womens-fashion","Women", "womens-fashion");
+        Category men=new Category("mens-clothes","Men", "mens-clothes");
+        Category kids=new Category("kids-and-baby","Kids", "kids-and-baby");
 
-        cateList.add(cat);
-        cateList.add(cat2);
-        cateList.add(cat3);
+        cateList.add(women);
+        cateList.add(men);
+        cateList.add(kids);
 
 
         mCategoryAdapter.replaceData(cateList);
@@ -207,11 +211,14 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
 
         private List<Category> mCategories;
         private CategoryItemListener mItemListener;
+        Context mContext;
 
-        public CategoriesAdapter(List<Category> categories, CategoryItemListener itemListener) {
+        public CategoriesAdapter(Context context,List<Category> categories, CategoryItemListener itemListener) {
             setList(categories);
             mItemListener = itemListener;
+            mContext=context;
         }
+
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -226,8 +233,20 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
             Category category = mCategories.get(position);
 
+
             viewHolder.title.setText(category.getDescription());
-            viewHolder.description.setText(category.getDescription());
+       //     viewHolder.description.setText(category.getDescription());
+
+            if(category.name.equals("womens-fashion")){
+                viewHolder.image.setImageResource(R.drawable.woman_category);
+            }
+            if(category.name.equals("mens-clothes")){
+                viewHolder.image.setImageResource(R.drawable.man_category);
+
+            }
+            if(category.name.equals("kids-and-baby")){
+                viewHolder.image.setImageResource(R.drawable.kids_category);
+            }
 
         }
 
@@ -255,13 +274,14 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
 
             public TextView description;
             private CategoryItemListener mItemListener;
+            private ThreeTwoImageView image;
 
             public ViewHolder(View itemView, CategoryItemListener listener) {
                 super(itemView);
                 mItemListener = listener;
                 title = (TextView) itemView.findViewById(R.id.category_detail_title);
                 description = (TextView) itemView.findViewById(R.id.category_detail_description);
-
+                image=(ThreeTwoImageView)itemView.findViewById(R.id.image_category);
 
                 itemView.setOnClickListener(this);
             }

@@ -27,6 +27,7 @@ import java.util.Set;
 public class ProductSaleTaskService extends GcmTaskService implements ProductSaleContract.View {
 
     public static final String ACTION_DONE = "GcmTaskService#ACTION_DONE";
+    public static final String ACTION_DATA_UPDATED = "com.example.carolinamarin.stylestumble.ACTION_DATA_UPDATED";
     public static final String EXTRA_TAG = "extra_tag";
     public static final String EXTRA_RESULT = "extra_result";
     private static Map<String, String> arra = new HashMap<String, String>();

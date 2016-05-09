@@ -27,10 +27,15 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
         String description = product.getDescription();
         String imageUrl = product.getImage().sizes.IPhone.url;
         String retailerUrl=product.getClickUrl();
+        String salePrice;
       //  String brand=product.brand.name;
         String retailer=product.retailer.name;
         double price=product.getPrice();
-
+        if(product.getSalePrice()!=null) {
+             salePrice = product.getSalePrice();
+        }else{
+            salePrice="0";
+        }
 
 
 //        if (title != null && title.isEmpty()) {
@@ -40,7 +45,7 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
             mProductsDetailView.showDescription(description);
             mProductsDetailView.showDescription(description);
        //     mProductsDetailView.showBrand(brand);
-            mProductsDetailView.showPrice(price);
+            mProductsDetailView.showPrice(price,salePrice);
             mProductsDetailView.showRetailer(retailer);
             mProductsDetailView.showShop(retailerUrl);
       //  }

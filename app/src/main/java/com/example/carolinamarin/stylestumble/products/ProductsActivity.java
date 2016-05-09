@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toolbar;
@@ -42,6 +43,7 @@ public class ProductsActivity extends AppCompatActivity {
     private  String categoryId;
     private Menu menu;
     private SearchView searchView;
+    private static int setMenu=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +53,14 @@ public class ProductsActivity extends AppCompatActivity {
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_launcher);
+       // toolbar.setNavigationIcon(R.drawable.carolina_app_title);
         setActionBar(toolbar);
         //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setVisibility(View.VISIBLE);
         getActionBar().setDisplayShowTitleEnabled(false);
+
+
+
 
         final CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.tabanim_viewpager);
         if (viewPager != null) {
@@ -111,21 +116,25 @@ public class ProductsActivity extends AppCompatActivity {
 
 
 
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//       super.onCreateOptionsMenu(menu);
-//        this.menu = menu;
-//        inflater.inflate(R.menu.menu_products, menu);
-//
-//        final MenuItem searchItem = menu.findItem(R.id.search);
-//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        this.menu = menu;
+
+             if(setMenu==1) {
+                 getMenuInflater().inflate(R.menu.menu_products, menu);
+         MenuItem item = menu.findItem(R.id.search);
+         item.setVisible(true);
+     }
+        return true;
+    }
+
+
+
     private void setUpViewPager(final CustomViewPager viewPager) {
        final  TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(ProductsFragment.newInstance(categoryId), "Hot Products");
-       adapter.addFragment(WishListFragment.newInstance(), "WishList");
+        adapter.addFragment(ProductsFragment.newInstance(categoryId), "Popular");
+       adapter.addFragment(WishListFragment.newInstance(), "Wish List");
         adapter.addFragment(ProductSaleFragment.newInstance(), "Sales");
         viewPager.setAdapter(adapter);
 
@@ -141,15 +150,24 @@ public class ProductsActivity extends AppCompatActivity {
 
 
                 if(position==0){
-                    getActionBar().show();
-                }if(position==1){
+                   setMenu=1;
+                   // getActionBar().show();
+                    MenuItem item = menu.findItem(R.id.search);
+                    item.setVisible(true);
+                }
+                if(position==1){
+                    setMenu=0;
+                    MenuItem item = menu.findItem(R.id.search);
+                    item.setVisible(false);
+//                    menu.findItem(R.id.search).setVisible(false);
 
-                  //  menu.findItem(R.id.search).setVisible(false);
-                    getActionBar().hide();
                 }
                 if(position==2) {
-                  //  getActionBar().hide();
-                    //MenuItem item = menu.findItem(R.id.addAction);
+                    setMenu=0;
+                    MenuItem item = menu.findItem(R.id.search);
+                    item.setVisible(false);
+//                    getActionBar().hide();
+//                    MenuItem item = menu.findItem(R.id.addAction);
                     adapter.getItem(position).onResume();
                 }
 //

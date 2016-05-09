@@ -10,30 +10,43 @@
     tools:showIn="@layout/activity_product_sale">
 
 
-
     <LinearLayout
         android:id="@+id/checkbox_notification"
-android:orientation="vertical"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/notification_text"
-            android:text="Show notifications"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <CheckBox
-            android:id="@+id/notification_show"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:id="@+id/notification_show"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/notification_text"
+                style="@style/Notifications"
+                android:text="@string/setNotifications"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/save_notification"
             android:text="Save"
+            style="@style/ButtonNotification"
+            android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/notification_sales"
-            android:text="Wish list Products currently on sale"
+            style="@style/Notifications"
+            android:layout_marginTop="10dp"
+            android:text="@string/setTitleSales"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <android.support.v7.widget.RecyclerView

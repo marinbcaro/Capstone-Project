@@ -26,7 +26,7 @@ public interface ProductDetailContract {
         void showDescription(String description);
         void showBrand(String brand);
         void showRetailer(String retailer);
-        void showPrice(Double price);
+        void showPrice(Double price,String salePrice);
         void showShop(String url);
     }
 

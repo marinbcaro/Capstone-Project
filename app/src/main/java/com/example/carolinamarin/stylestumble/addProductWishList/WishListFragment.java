@@ -62,6 +62,17 @@ public class WishListFragment extends Fragment implements WishListContract.View,
     }
 
 
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//
+//        inflater.inflate(R.menu.menu_products, menu);
+//
+//        final MenuItem searchItem = menu.findItem(R.id.search);
+//      //  final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+//        searchItem.setVisible(false);
+//
+//
+//    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -111,10 +122,13 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         startActivity(intent);
     }
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+       // setHasOptionsMenu(false);
 
         View root = inflater.inflate(R.layout.fragment_wish_list, container, false);
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.products_wish_list);
@@ -145,7 +159,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
     private static class WishListAdapter extends CursorRecyclerViewAdapter<WishListAdapter.ViewHolder> {
 
-        Context mContext;
+        private Context mContext;
         ViewHolder mVh;
         private ProductItemListener mItemListener;
         private List<Category> mCategories;
@@ -171,11 +185,25 @@ public class WishListFragment extends Fragment implements WishListContract.View,
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
             //   DatabaseUtils.dumpCursor(cursor);
+            viewHolder.price.setText("");
+            viewHolder.salePrice.setText("");
 
             viewHolder.name.setText(cursor.getString(
                     cursor.getColumnIndex(ProductColumns.NAME)));
             viewHolder.price.setText("$" + cursor.getString(
                     cursor.getColumnIndex(ProductColumns.PRICE)));
+
+
+            if(!cursor.getString(
+                    cursor.getColumnIndex(ProductColumns.SALEPRICE)).equals("0")){
+
+                viewHolder.price.setText("Reg $"+cursor.getString(
+                        cursor.getColumnIndex(ProductColumns.PRICE)));
+                viewHolder.salePrice.setVisibility(View.VISIBLE);
+
+                viewHolder.salePrice.setText("Sale $"+cursor.getString(
+                        cursor.getColumnIndex(ProductColumns.SALEPRICE)));
+            }
 
             //   viewHolder.description.setText(cursor.getColumnIndex(ProductColumns.DESCRIPTION));
 
@@ -207,6 +235,18 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //         //   return mCategories.size();
 //        }
 
+        public void showProductDetails(int pos){
+
+            getCursor().moveToPosition(pos);
+            int currentPosition = getCursor().getPosition();
+            Cursor c = getCursor();
+            c.moveToPosition(currentPosition);
+
+            String id = c.getString(c.getColumnIndex(ProductColumns._ID));
+
+            mItemListener.onProductClick(id);
+        }
+
 
         public class ViewHolder extends RecyclerView.ViewHolder  {
 
@@ -219,6 +259,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
             private ImageView image;
             private Button button;
             private ImageButton buttonDelete;
+            private TextView salePrice;
 
             public ViewHolder(View view, ProductItemListener listener) {
                 super(view);
@@ -229,6 +270,12 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
                 image = (ImageView) view.findViewById(R.id.product_image);
                 price=(TextView)view.findViewById(R.id.product_price);
+                salePrice=(TextView)view.findViewById(R.id.product_salePrice);
+
+
+
+
+
 
 //                button=(Button)view.findViewById(R.id.view_item_wishlist);
 //                button.setOnClickListener(new View.OnClickListener() {
@@ -245,6 +292,26 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 //                });
 
                 buttonDelete=(ImageButton)view.findViewById(R.id.delete_item_wishlist);
+
+                image.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        showProductDetails(pos);
+
+                    }
+                });
+
+                name.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        int pos=getAdapterPosition();
+                        showProductDetails(pos);
+
+                    }
+                });
+
+
               //  buttonDelete.setOnClickListener(this);
                 buttonDelete.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
