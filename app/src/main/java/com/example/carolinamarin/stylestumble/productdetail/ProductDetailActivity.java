@@ -12,6 +12,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
+import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class ProductDetailActivity extends AppCompatActivity {
     public static final String PRODUCT_ID = "PRODUCT_ID";
@@ -80,6 +83,19 @@ public class ProductDetailActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+
+        // Send a hit to Analytics
+        // Create a tracker
+        Tracker tracker = ((StyleStumbleApplication) getApplication()).getTracker();
+        tracker.setScreenName("Product Detail");
+        // Send an event to Google Analytics
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Product Detail")
+                .setAction("Show detail of product")
+                .setLabel("Detail Label")
+                .build());
+
+
     }
 
 //    @Override

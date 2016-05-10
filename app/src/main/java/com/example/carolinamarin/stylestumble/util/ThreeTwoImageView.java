@@ -6,7 +6,10 @@ import android.widget.ImageView;
 
 /**
  * Created by carolinamarin on 5/8/16.
+ *
  */
+
+
 public class ThreeTwoImageView  extends ImageView{
     public ThreeTwoImageView(Context context) {
         super(context);

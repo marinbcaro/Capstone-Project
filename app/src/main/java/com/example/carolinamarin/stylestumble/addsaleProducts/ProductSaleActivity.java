@@ -13,6 +13,9 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.example.carolinamarin.stylestumble.R;
+import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class ProductSaleActivity extends AppCompatActivity {
 
@@ -35,6 +38,18 @@ public class ProductSaleActivity extends AppCompatActivity {
         if (null == savedInstanceState) {
             initFragment(ProductSaleFragment.newInstance());
         }
+
+        // Send a hit to Analytics
+        // Create a tracker
+        Tracker tracker = ((StyleStumbleApplication) getApplication()).getTracker();
+        tracker.setScreenName("Sale");
+        // Send an event to Google Analytics
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Sale")
+                .setAction("Show list of sales")
+                .setLabel("Sales Label")
+                .build());
+
 
     }
     public void onCheckboxClicked(View view) {

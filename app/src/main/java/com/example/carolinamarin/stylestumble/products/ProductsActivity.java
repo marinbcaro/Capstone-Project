@@ -25,8 +25,8 @@ import com.example.carolinamarin.stylestumble.addProductWishList.WishListFragmen
 import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleFragment;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
 import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
-import com.google.android.gms.tagmanager.DataLayer;
-import com.google.android.gms.tagmanager.TagManager;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 //import android.support.v7.widget.Toolbar;
 
@@ -53,7 +53,7 @@ public class ProductsActivity extends AppCompatActivity {
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // toolbar.setNavigationIcon(R.drawable.carolina_app_title);
+        toolbar.setNavigationIcon(R.drawable.carolina_app_title);
         setActionBar(toolbar);
         //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setVisibility(View.VISIBLE);
@@ -78,32 +78,29 @@ public class ProductsActivity extends AppCompatActivity {
         viewPager.setCurrentItem(position);
         }
 
+
 //
 //        // Send data to Tag Manager
 //        // Get the data layer
-        TagManager tagManager = ((StyleStumbleApplication) getApplication()).getTagManager();
-        DataLayer dl = tagManager.getDataLayer();
-
-        // Push an event into the data layer
-        // which will trigger sending a hit to Analytics
-
-        dl.pushEvent("loadProducts",
-                DataLayer.mapOf(
-                        "screen-name", "Products"));
+//        TagManager tagManager = ((StyleStumbleApplication) getApplication()).getTagManager();
+//        DataLayer dl = tagManager.getDataLayer();
+//        // Push an event into the data layer
+//        // which will trigger sending a hit to Analytics
+//        dl.pushEvent("loadProducts",
+//                DataLayer.mapOf(
+//                        "screen-name", "Products"));
 
 
-
-
-//        // Send a hit to Analytics
-//        // Create a tracker
-//        Tracker tracker = ((StyleStumbleApplication) getApplication()).getTracker();
-//        tracker.setScreenName("Products");
-//        // Send an event to Google Analytics
-//        tracker.send(new HitBuilders.EventBuilder()
-//                .setCategory("Products")
-//                .setAction("Show list of products")
-//                .setLabel("Products hi")
-//                .build());
+        // Send a hit to Analytics
+        // Create a tracker
+        Tracker tracker = ((StyleStumbleApplication) getApplication()).getTracker();
+        tracker.setScreenName("Products");
+        // Send an event to Google Analytics
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Products")
+                .setAction("Show list of products")
+                .setLabel("Products Label")
+                .build());
 
 
     }
@@ -134,7 +131,7 @@ public class ProductsActivity extends AppCompatActivity {
     private void setUpViewPager(final CustomViewPager viewPager) {
        final  TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(ProductsFragment.newInstance(categoryId), "Popular");
-       adapter.addFragment(WishListFragment.newInstance(), "Wish List");
+        adapter.addFragment(WishListFragment.newInstance(), "Wish List");
         adapter.addFragment(ProductSaleFragment.newInstance(), "Sales");
         viewPager.setAdapter(adapter);
 
@@ -147,42 +144,13 @@ public class ProductsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-
-
+                MenuItem item = menu.findItem(R.id.search);
+                setMenu=0;
+                item.setVisible(false);
                 if(position==0){
                    setMenu=1;
-                   // getActionBar().show();
-//                    if(menu!=null){
-//                    MenuItem item = menu.findItem(R.id.search);
-//                    item.setVisible(true);}
+                    item.setVisible(true);
                 }
-                if(position==1){
-                    setMenu=0;
-//                    if(menu!=null) {
-//                        MenuItem item = menu.findItem(R.id.search);
-//                        item.setVisible(false);
-//                    }
-//                    menu.findItem(R.id.search).setVisible(false);
-
-                }
-                if(position==2) {
-                    setMenu=0;
-//                    if(menu!=null) {
-//                        MenuItem item = menu.findItem(R.id.search);
-//                        item.setVisible(false);
-//                    }
-//                    getActionBar().hide();
-//                    MenuItem item = menu.findItem(R.id.addAction);
-                    adapter.getItem(position).onResume();
-                }
-//
-////                    FragmentManager fragmentManager = getSupportFragmentManager();
-////                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-////                    transaction.replace(R.id.contentProductSale, ProductSaleFragment.newInstance());
-////                    transaction.commit();
-//                }
-
-
             }
 
             @Override

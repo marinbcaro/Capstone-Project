@@ -10,6 +10,8 @@ import android.view.MenuItem;
 
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tagmanager.ContainerHolder;
@@ -49,6 +51,18 @@ public class CategoriesActivity extends AppCompatActivity {
         if (null == savedInstanceState) {
             initFragment(CategoriesFragment.newInstance());
         }
+
+        // Send a hit to Analytics
+        // Create a tracker
+        Tracker tracker = ((StyleStumbleApplication) getApplication()).getTracker();
+        tracker.setScreenName("Categories");
+        // Send an event to Google Analytics
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Categories")
+                .setAction("Show list of categories")
+                .setLabel("Categories Label")
+                .build());
+
 
     }
 
