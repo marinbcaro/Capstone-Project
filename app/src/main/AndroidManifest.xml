@@ -78,6 +78,11 @@
                 android:resource="@xml/widget_sales" />
         </receiver>
 
+        <service android:name=".widget.WidgetIntentService" />
+        <service
+            android:name=".widget.WidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <activity
             android:name=".addProductWishList.WishListActivity"
             android:label="@string/title_activity_wish_list"

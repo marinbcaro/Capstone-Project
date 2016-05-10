@@ -131,10 +131,24 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
         if (product.getSalePrice() != null) {
             arra.put(product.getId(), product.getSalePrice());
             showMessage = true;
+            updateWidget();
+
         }
 
         Log.d("count", "cursor count: " + product.getId() + "price:" + product.getSalePrice());
 
 
     }
+
+    public void updateWidget(){
+        if (mContext == null) {
+            mContext = this;
+        }
+        Context context = mContext;// Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
+
+    }
+
 }

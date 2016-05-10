@@ -1,6 +1,7 @@
 package com.example.carolinamarin.stylestumble.addsaleProducts;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.google.android.gms.gcm.TaskParams;
  */
 public class ProductSaleIntentService extends IntentService {
 
+    private Context mContext;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -40,5 +42,9 @@ public class ProductSaleIntentService extends IntentService {
         // scheduling a task.
         stockTaskService.onRunTask(new TaskParams("product", args));
 
+
     }
+
+
+
 }

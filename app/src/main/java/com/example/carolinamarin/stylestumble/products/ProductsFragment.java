@@ -1,6 +1,7 @@
 package com.example.carolinamarin.stylestumble.products;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
@@ -41,8 +42,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
-import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleIntentService;
 import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleTaskService;
+import com.example.carolinamarin.stylestumble.categories.CategoriesActivity;
 import com.example.carolinamarin.stylestumble.data.Product;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
@@ -53,7 +54,9 @@ import com.example.carolinamarin.stylestumble.util.EndlessRecyclerViewScrollList
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperAdapter;
 import com.example.carolinamarin.stylestumble.util.ItemTouchHelperViewHolder;
 import com.google.android.gms.gcm.GcmNetworkManager;
-import com.google.android.gms.gcm.OneoffTask;
+import com.google.android.gms.gcm.PeriodicTask;
+import com.google.android.gms.gcm.Task;
+import com.google.android.gms.gcm.TaskParams;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +115,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
 
 
-        Intent intent = new Intent(getContext(), ProductsActivity.class);
+        Intent intent = new Intent(getContext(), CategoriesActivity.class);
         intent.putExtra("POSITION_KEY",1);
         int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
         int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
@@ -124,13 +127,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 new NotificationCompat.Builder(getContext())
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Sale Alert")
-                        .setContentText("Some products in your wishlist are on Sale! grab them before they are gone!")
+                        .setContentText("Some products in your wish list are on Sale! grab them before they are gone!")
                         .setContentIntent(pIntent)
                         .build();
-
-
-
-
 
 
 
@@ -146,14 +145,17 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                         String result = intent.getStringExtra(ProductSaleTaskService.EXTRA_RESULT);
                         if(result.equals("display")) {
 
-                            // String msg = String.format("DONE: %s (%d)", tag, result);
-//                            if (getContext()!=null) {
-//                                NotificationManager mNotificationManager =
-//                                        (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//                                // mId allows you to update the notification later on.
-//                                mNotificationManager.notify(1, mBuilder);
-//                            }
+
+
+
+
+                            if (getContext()!=null) {
+                                NotificationManager mNotificationManager =
+                                        (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+                                // mId allows you to update the notification later on.
+                                mNotificationManager.notify(1, mBuilder);
+                           }
                         }
                     }
                 }
@@ -204,20 +206,24 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 null, null, null, null);
         String catId = getArguments().getString(ARGUMENT_CAT_ID);
         Log.i("count", "cursor count: " + c.getCount());
-        if (c == null || c.getCount() == 0) {
-            if (savedInstanceState == null) {
-                cat_id = catId;
-                mActionsListener.loadProducts(catId, "", 0, false);
-                getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-            }
-        } else {
-            if (savedInstanceState == null) {
-                getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
-                        null, null);
-                mActionsListener.loadProducts(catId, searchQuery, 0, true);
-                getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        if(checkConnection()) {
+            if (c == null || c.getCount() == 0) {
+                if (savedInstanceState == null) {
+                    cat_id = catId;
+                    mActionsListener.loadProducts(catId, "", 0, false);
+                    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+                }
+            } else {
+                if (savedInstanceState == null) {
+                    getActivity().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
+                            null, null);
+                    mActionsListener.loadProducts(catId, searchQuery, 0, true);
+                    getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
 
+                }
             }
+        }else{
+            showMessageNoConnection();
         }
         searchQuery="";
 
@@ -237,71 +243,64 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
 
     private void setUpGcmTask(Context mContext){
 
+
+
+
+        if(checkConnection()){
+
+
+            //ONLY FOR DEBUGGING UNCOMMENT TO TEST ONE OFF TASK THAT RUNS IMMEDIATELY INTENT SERVICE IS REQUIRED FOR THIS
+    //        Intent mServiceIntent = new Intent(getContext(), ProductSaleIntentService.class);
+//            getActivity().startService(mServiceIntent);
+//
+//            OneoffTask myTask = new OneoffTask.Builder()
+//                    .setService(ProductSaleTaskService.class)
+//                    .setExecutionWindow(0L, 60L)
+//                    .setTag("product")
+//                    .build();
+//            GcmNetworkManager.getInstance(getContext()).schedule(myTask);
+
+
+
+            //RUNS TASK EVERY DAY TO GET WHICH PRODUCTS WENT ON SALE
+            long period=86400L;
+            String periodicTag = "periodic";
+            PeriodicTask periodicTask = new PeriodicTask.Builder()
+                    .setService(ProductSaleTaskService.class)
+                    .setPeriod(period)
+                    .setTag(periodicTag)
+                    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+                    .setRequiresCharging(false)
+                    .build();
+
+            GcmNetworkManager.getInstance(getContext()).schedule(periodicTask);
+
+            //WHEN PERIODIC TASK RUN JUST THE TASK SERVICE THE INTENT SERVICE IS NOT NEEDED
+            ProductSaleTaskService productSaleTaskService = new ProductSaleTaskService(getActivity());
+            Bundle args = new Bundle();
+            args.putString("product", "product");
+            productSaleTaskService.onRunTask(new TaskParams("product", args));
+
+        }
+        else{
+            showMessageNoConnection();
+        }
+
+
+    }
+    public boolean checkConnection(){
         ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        Intent mServiceIntent = new Intent(getContext(), ProductSaleIntentService.class);
-
-        if(isConnected){
-
-            getActivity().startService(mServiceIntent);
-
-
-
-            OneoffTask myTask = new OneoffTask.Builder()
-                    .setService(ProductSaleTaskService.class)
-                    .setExecutionWindow(0L, 60L)
-                    .setTag("product")
-                    .build();
-            GcmNetworkManager.getInstance(getContext()).schedule(myTask);
-
-            //NO DEBUBBING
-//            ProductSaleTaskService stockTaskService = new ProductSaleTaskService(getActivity());
-//            Bundle args = new Bundle();
-//            args.putString("product", "product");
-//            stockTaskService.onRunTask(new TaskParams("product", args));
-            //NO DEBUBBING
-
-
-//        //    long period = 3600L;
-//            long period=5L;
-//            long flex = 10L;
-//            String periodicTag = "periodic";
-//
-//            // create a periodic task to pull stocks once every hour after the app has been opened. This
-//            // is so Widget data stays up to date.
-//            PeriodicTask periodicTask = new PeriodicTask.Builder()
-//                    .setService(ProductSaleTaskService.class)
-//                    .setPeriod(period)
-//                    .setFlex(flex)
-//                    .setTag(periodicTag)
-//                    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
-//                    .setRequiresCharging(false)
-//                    .build();
-//            // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
-//            // are updated.
-//            GcmNetworkManager.getInstance(this).schedule(periodicTask);
-//            Bundle args =new Bundle();
-//            args.putString("product","hola");
-//
-//            ProductSaleTaskService serv=new ProductSaleTaskService();
-//
-//            serv.onRunTask(new TaskParams())
-
-        }
-        else{
-            networkToast();
-        }
-
-
-
+        return isConnected;
     }
-    public void networkToast(){
-        Toast.makeText(mContext, "not connected", Toast.LENGTH_SHORT).show();
+
+    public void showMessageNoConnection(){
+        Toast.makeText(getActivity(), "No Internet connection available", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -345,11 +344,16 @@ public class ProductsFragment extends Fragment implements ProductsContract.View,
                 String catId = getArguments().getString(ARGUMENT_CAT_ID);
                 // mActionsListener = new ProductsPresenter(Injection.provideProductsRepository(), getApplicationContext());
                 //  if(getContext().getContentResolver()!=null) {
-                getContext().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
-                        null, null);
-                //}
-                offset=0;
-                mActionsListener.loadProducts(catId, query, offset, true);
+
+                if(checkConnection()) {
+                    getContext().getContentResolver().delete(ProductProvider.Products.PRODUCTS,
+                            null, null);
+                    //}
+                    offset = 0;
+                    mActionsListener.loadProducts(catId, query, offset, true);
+                }else{
+                    showMessageNoConnection();
+                }
                 // Reset SearchView
                 searchView.clearFocus();
                 searchView.setQuery("", false);

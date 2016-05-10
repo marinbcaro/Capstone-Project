@@ -152,20 +152,25 @@ public class ProductsActivity extends AppCompatActivity {
                 if(position==0){
                    setMenu=1;
                    // getActionBar().show();
-                    MenuItem item = menu.findItem(R.id.search);
-                    item.setVisible(true);
+//                    if(menu!=null){
+//                    MenuItem item = menu.findItem(R.id.search);
+//                    item.setVisible(true);}
                 }
                 if(position==1){
                     setMenu=0;
-                    MenuItem item = menu.findItem(R.id.search);
-                    item.setVisible(false);
+//                    if(menu!=null) {
+//                        MenuItem item = menu.findItem(R.id.search);
+//                        item.setVisible(false);
+//                    }
 //                    menu.findItem(R.id.search).setVisible(false);
 
                 }
                 if(position==2) {
                     setMenu=0;
-                    MenuItem item = menu.findItem(R.id.search);
-                    item.setVisible(false);
+//                    if(menu!=null) {
+//                        MenuItem item = menu.findItem(R.id.search);
+//                        item.setVisible(false);
+//                    }
 //                    getActionBar().hide();
 //                    MenuItem item = menu.findItem(R.id.addAction);
                     adapter.getItem(position).onResume();

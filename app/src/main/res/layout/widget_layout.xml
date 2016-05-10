@@ -11,7 +11,7 @@
         android:id="@+id/widget"
         android:layout_width="match_parent"
         android:layout_height="@dimen/abc_action_bar_default_height_material"
-        android:background="@color/colorAccent">
+        android:background="@color/colorBlack">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -21,16 +21,24 @@
             />
     </FrameLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorBlack"
+       android:textAlignment="center"
+        android:background="@color/colorWhite"
+        android:text="@string/title_widget"
+        android:textSize="20sp"
+        />
 
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/colorAccent"
+        android:background="@color/colorWhite"
         android:id="@+id/widget_list_item"
         >
-
 
         <ListView
             android:id="@+id/listViewWidget"
@@ -39,7 +47,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="2dp"
             android:dividerHeight="1dp"
-            android:divider="@color/colorAccent"
+            android:divider="@color/colorBlack"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

@@ -193,8 +193,8 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
     public void showCategories(List<Category> categories){
 
         ArrayList<Category> cateList=new ArrayList<>();
-        Category women=new Category("womens-fashion","Women", "womens-fashion");
-        Category men=new Category("mens-clothes","Men", "mens-clothes");
+        Category women=new Category("women","Women", "women");
+        Category men=new Category("men","Men", "men");
         Category kids=new Category("kids-and-baby","Kids", "kids-and-baby");
 
         cateList.add(women);
@@ -237,10 +237,10 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
             viewHolder.title.setText(category.getDescription());
        //     viewHolder.description.setText(category.getDescription());
 
-            if(category.name.equals("womens-fashion")){
+            if(category.name.equals("women")){
                 viewHolder.image.setImageResource(R.drawable.woman_category);
             }
-            if(category.name.equals("mens-clothes")){
+            if(category.name.equals("men")){
                 viewHolder.image.setImageResource(R.drawable.man_category);
 
             }
