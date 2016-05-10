@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.data.ProductDetail;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;

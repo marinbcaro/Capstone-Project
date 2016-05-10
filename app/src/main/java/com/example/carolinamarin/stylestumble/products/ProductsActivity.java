@@ -19,7 +19,7 @@ import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toolbar;
 
-import com.example.carolinamarin.stylestumble.R;
+
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListActivity;
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListFragment;
 import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleFragment;

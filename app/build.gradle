@@ -34,9 +34,7 @@ android {
 
     // If you need to add more flavors, consider using flavor dimensions.
     productFlavors {
-        mock {
-            applicationIdSuffix = ".mock"
-        }
+
         prod {
 
         }
@@ -58,9 +56,6 @@ android {
     }
 
     sourceSets {
-        prod { java.srcDirs = ['src/prod/java', 'src/prod/java/'] }
-        prodDebug { java.srcDirs = ['src/prodDebug/java', 'src/prod'] }
-        mock { java.srcDirs = ['src/mock/java', 'src/mock/java/'] }
         main {
             java.srcDirs = ['src/main/java', 'src/main/java/data/provider', 'src/main/java/productdetail']
         }
