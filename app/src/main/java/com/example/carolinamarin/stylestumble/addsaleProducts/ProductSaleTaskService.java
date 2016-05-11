@@ -4,9 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.data.ProductDetail;
@@ -40,7 +38,6 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
     }
 
     public ProductSaleTaskService() {
-
     }
 
     @Override
@@ -51,8 +48,6 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
     @Override
     public int onRunTask(TaskParams taskParams) {
 
-
-// Create Intent to broadcast the task information.
         Intent intent = new Intent();
         intent.setAction(ACTION_DONE);
         intent.putExtra(EXTRA_TAG, "products");
@@ -74,49 +69,44 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
             String price = c.getString(c.getColumnIndex("price"));
             mActionsListener.loadProduct(id);
 
-            Log.d("count", "cursor count: " + id);
-
             c.moveToNext();
         }
         try {
-        if (arra.size() > 0) {
-            intent.putExtra(EXTRA_RESULT, "display");
+            if (arra.size() > 0) {
+                intent.putExtra(EXTRA_RESULT, "display");
 
-            Set set = arra.entrySet();
-            Iterator iterator = set.iterator();
-            ContentValues cv = new ContentValues();
+                Set set = arra.entrySet();
+                Iterator iterator = set.iterator();
+                ContentValues cv = new ContentValues();
 
-            while (iterator.hasNext()) {
+                while (iterator.hasNext()) {
 
-                Map.Entry mentry = (Map.Entry) iterator.next();
-
-
-                String productId = (String) mentry.getKey();
-                String salePrice = (String) mentry.getValue();
-                long theid = Long.parseLong(productId);
+                    Map.Entry mentry = (Map.Entry) iterator.next();
 
 
-                //   long _id = c.getLong((Long)productId);
+                    String productId = (String) mentry.getKey();
+                    String salePrice = (String) mentry.getValue();
+                    long theid = Long.parseLong(productId);
 
-                cv.put(ProductColumns._ID, productId);
+
+                    cv.put(ProductColumns._ID, productId);
 
 
-                cv.put(ProductColumns.SALEPRICE, salePrice);
+                    cv.put(ProductColumns.SALEPRICE, salePrice);
 
                     mContext.getContentResolver().update(ProductProvider.Products.withId(theid), cv, null, null);
                     mContext.getContentResolver().update(ProductProvider.WishList.withId(theid), cv, null, null);
 
+                    //  DatabaseUtils.dumpCursor(c);
+                }
 
-                DatabaseUtils.dumpCursor(c);
+
+            } else {
+                intent.putExtra(EXTRA_RESULT, "hide");
             }
 
-
-        } else {
-            intent.putExtra(EXTRA_RESULT, "hide");
-        }
-
         } catch (Exception e) {
-            //Log.e("ERROOOOOR", e.getMessage());
+
         }
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
         manager.sendBroadcast(intent);
@@ -132,15 +122,11 @@ public class ProductSaleTaskService extends GcmTaskService implements ProductSal
             arra.put(product.getId(), product.getSalePrice());
             showMessage = true;
             updateWidget();
-
         }
-
-        Log.d("count", "cursor count: " + product.getId() + "price:" + product.getSalePrice());
-
-
+        //  Log.d("count", "cursor count: " + product.getId() + "price:" + product.getSalePrice());
     }
 
-    public void updateWidget(){
+    public void updateWidget() {
         if (mContext == null) {
             mContext = this;
         }

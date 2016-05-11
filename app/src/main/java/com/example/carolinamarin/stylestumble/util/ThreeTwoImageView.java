@@ -6,7 +6,7 @@ import android.widget.ImageView;
 
 /**
  * Created by carolinamarin on 5/8/16.
- *
+ * From Udacity course material design
  */
 
 

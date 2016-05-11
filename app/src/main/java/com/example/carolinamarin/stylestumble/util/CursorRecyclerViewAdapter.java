@@ -4,10 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 /**
  * Created by carolinamarin on 4/3/16.
+ * From the gist:https://gist.github.com/skyfishjy/443b7448f59be978bc59
  */
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH>{
@@ -27,7 +27,6 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         if (mDataIsValid){
             mCursor.registerDataSetObserver(mDataSetObserver);
         }
-        Log.d(LOG_TAG, "in super");
     }
 
     public Cursor getCursor(){

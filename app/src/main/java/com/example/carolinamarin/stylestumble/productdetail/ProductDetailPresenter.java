@@ -16,52 +16,32 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
     private ProductsRepository mProductssRepository;
     private ProductDetailContract.View mProductsDetailView;
 
-    public ProductDetailPresenter(@NonNull ProductsRepository productsRepository,   @NonNull ProductDetailContract.View productsView ){
+    public ProductDetailPresenter(@NonNull ProductsRepository productsRepository, @NonNull ProductDetailContract.View productsView) {
 
-        mProductssRepository=checkNotNull(productsRepository,"products cannot be null");
-        mProductsDetailView=checkNotNull(productsView,"productsview cannot be null");
+        mProductssRepository = checkNotNull(productsRepository, "products cannot be null");
+        mProductsDetailView = checkNotNull(productsView, "productsview cannot be null");
     }
 
     private void showProduct(ProductDetail product) {
         String title = product.getName();
         String description = product.getDescription();
         String imageUrl = product.getImage().sizes.IPhone.url;
-        String retailerUrl=product.getClickUrl();
+        String retailerUrl = product.getClickUrl();
         String salePrice;
-      //  String brand=product.brand.name;
-        String retailer=product.retailer.name;
-        double price=product.getPrice();
-        if(product.getSalePrice()!=null) {
-             salePrice = product.getSalePrice();
-        }else{
-            salePrice="0";
+        String retailer = product.retailer.name;
+        double price = product.getPrice();
+        if (product.getSalePrice() != null) {
+            salePrice = product.getSalePrice();
+        } else {
+            salePrice = "0";
         }
 
-
-//        if (title != null && title.isEmpty()) {
-//            mProductsDetailView.hideTitle();
-//        } else {
-            mProductsDetailView.showTitle(title,imageUrl);
-            mProductsDetailView.showDescription(description);
-            mProductsDetailView.showDescription(description);
-       //     mProductsDetailView.showBrand(brand);
-            mProductsDetailView.showPrice(price,salePrice);
-            mProductsDetailView.showRetailer(retailer);
-            mProductsDetailView.showShop(retailerUrl);
-      //  }
-
-//        if (description != null && description.isEmpty()) {
-//            mNotesDetailView.hideDescription();
-//        } else {
-//            mNotesDetailView.showDescription(description);
-//        }
-//
-//        if (imageUrl != null) {
-//            mNotesDetailView.showImage(imageUrl);
-//        } else {
-//            mNotesDetailView.hideImage();
-//        }
-
+        mProductsDetailView.showTitle(title, imageUrl);
+        mProductsDetailView.showDescription(description);
+        mProductsDetailView.showDescription(description);
+        mProductsDetailView.showPrice(price, salePrice);
+        mProductsDetailView.showRetailer(retailer);
+        mProductsDetailView.showShop(retailerUrl);
     }
 
 
@@ -72,7 +52,7 @@ public class ProductDetailPresenter implements ProductDetailContract.UserActions
             @Override
             public void onProductLoaded(ProductDetail product) {
                 mProductsDetailView.setProgressIndicator(false);
-                    showProduct(product);
+                showProduct(product);
 
             }
         });

@@ -25,11 +25,11 @@ public class InMemoryProductsRepository implements ProductsRepository {
     }
 
     @Override
-    public void getProducts(String catdId,String search,int offset,@NonNull final ProductsRepository.LoadProductsCallback callback) {
+    public void getProducts(String catdId, String search, int offset, @NonNull final ProductsRepository.LoadProductsCallback callback) {
         checkNotNull(callback);
         // Load from API only if needed.
         if (mCachedCategories == null) {
-            mCategoriesServiceApi.getProductsCategories(catdId,search,offset,new ProductsServiceApi.ProductsServiceCallback<List<Product>>() {
+            mCategoriesServiceApi.getProductsCategories(catdId, search, offset, new ProductsServiceApi.ProductsServiceCallback<List<Product>>() {
                 @Override
                 public void onLoaded(List<Product> products) {
                     mCachedCategories = ImmutableList.copyOf(products);
@@ -42,12 +42,11 @@ public class InMemoryProductsRepository implements ProductsRepository {
     }
 
 
-
     @Override
     public void getProduct(@NonNull final String productId, @NonNull final ProductsRepository.GetProductCallback callback) {
         checkNotNull(productId);
         checkNotNull(callback);
-        // Load notes matching the id always directly from the API.
+
         mCategoriesServiceApi.getProduct(productId, new ProductsServiceApi.GetProductServiceCallback<ProductDetail>() {
             @Override
             public void onProductLoaded(ProductDetail product) {

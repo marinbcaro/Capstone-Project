@@ -46,9 +46,7 @@ public class WidgetIntentService extends IntentService {
 
             views.setRemoteAdapter(R.id.listViewWidget, svcIntent);
 
-
             views.setEmptyView(R.id.listViewWidget, R.id.empty_view);
-
 
             Intent startActivityIntent = new Intent(getApplicationContext(), ProductsActivity.class);
             PendingIntent startActivityPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -9,8 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.Toast;
 
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
@@ -49,17 +47,6 @@ public class ProductSaleActivity extends AppCompatActivity {
                 .setAction("Show list of sales")
                 .setLabel("Sales Label")
                 .build());
-
-
-    }
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-
-        if(checked){
-            Toast.makeText(this, "here", Toast.LENGTH_SHORT);
-        }
-
     }
 
 
@@ -69,8 +56,5 @@ public class ProductSaleActivity extends AppCompatActivity {
         transaction.add(R.id.contentProductSale, detailFragment);
         transaction.commit();
     }
-
-
-
 
 }

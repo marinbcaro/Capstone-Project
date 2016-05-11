@@ -1,6 +1,5 @@
 package com.example.carolinamarin.stylestumble.categories;
 
-import com.example.carolinamarin.stylestumble.data.CategoriesRepository;
 import com.example.carolinamarin.stylestumble.data.CategoriesRepository.LoadCategoriesCallback;
 import com.example.carolinamarin.stylestumble.data.Category;
 import com.google.common.collect.Lists;

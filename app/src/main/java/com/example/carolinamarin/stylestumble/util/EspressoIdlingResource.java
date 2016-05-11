@@ -4,6 +4,7 @@ import android.support.test.espresso.IdlingResource;
 
 /**
  * Created by carolinamarin on 2/23/16.
+ * From the notes android testing
  */
 public class EspressoIdlingResource {
     private static final String RESOURCE = "GLOBAL";

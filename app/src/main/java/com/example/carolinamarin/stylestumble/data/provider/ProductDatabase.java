@@ -12,10 +12,7 @@ public final class ProductDatabase {
     public static final int VERSION = 1;
 
     @Table(ProductColumns.class) public static final String PRODUCTS = "products";
-
-
     @Table(WishListColumns.class) public static final String WISHLIST = "wishlist";
-
     @Table(PreferenceColumns.class) public static final String USERPREFERENCES = "userpreferences";
 
 }

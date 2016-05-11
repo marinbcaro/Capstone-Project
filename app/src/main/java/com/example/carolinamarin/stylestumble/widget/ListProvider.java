@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * Created by carolinamarin on 5/9/16.
  */
-public class ListProvider implements RemoteViewsService.RemoteViewsFactory{
+public class ListProvider implements RemoteViewsService.RemoteViewsFactory {
 
 
     private ArrayList<ListItem> listItemList = new ArrayList<ListItem>();
@@ -59,7 +59,6 @@ public class ListProvider implements RemoteViewsService.RemoteViewsFactory{
     }
 
 
-
     @Override
     public void onCreate() {
 
@@ -88,7 +87,7 @@ public class ListProvider implements RemoteViewsService.RemoteViewsFactory{
 
 
         remoteView.setTextViewText(R.id.name, listItem.name);
-        remoteView.setTextViewText(R.id.price, "$"+listItem.price);
+        remoteView.setTextViewText(R.id.price, "$" + listItem.price);
 
         Intent fillInIntent = new Intent();
         remoteView.setOnClickFillInIntent(R.id.item_layout, fillInIntent);

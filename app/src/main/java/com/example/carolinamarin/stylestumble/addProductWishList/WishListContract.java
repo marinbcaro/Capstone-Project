@@ -8,17 +8,11 @@ import android.support.annotation.NonNull;
 public interface WishListContract {
 
 
-     interface View {
-
-        void showProducts();
-         void showDetailProduct(String id);
-
+    interface View {
+        void showDetailProduct(String id);
     }
 
     interface UserActionsListener {
-
         void openProductDetails(@NonNull String productId);
-
-
     }
 }

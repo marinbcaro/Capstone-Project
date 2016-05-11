@@ -10,7 +10,6 @@ import java.util.List;
 
 public class TabFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mFragmentTitles = new ArrayList<>();
 

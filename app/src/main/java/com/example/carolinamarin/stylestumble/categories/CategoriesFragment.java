@@ -2,10 +2,6 @@ package com.example.carolinamarin.stylestumble.categories;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Category;
 import com.example.carolinamarin.stylestumble.products.ProductsActivity;
@@ -27,26 +22,8 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CategoriesFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CategoriesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CategoriesFragment extends Fragment implements CategoriesContract.View  {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final int REQUEST_LOAD_PRODUCTS = 1;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //private OnFragmentInteractionListener mListener;
     private CategoriesContract.UserActionsListener mCategoriesListener;
     private CategoriesAdapter mCategoryAdapter;
 
@@ -54,23 +31,6 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CategoriesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-//    public static CategoriesFragment newInstance(String param1, String param2) {
-//        CategoriesFragment fragment = new CategoriesFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     public static CategoriesFragment newInstance() {
         return new CategoriesFragment();
@@ -80,10 +40,6 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCategoryAdapter = new CategoriesAdapter(getActivity(),new ArrayList<Category>(0), mItemListener);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
     }
 
     @Override
@@ -97,21 +53,8 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         super.onActivityCreated(savedInstanceState);
 
         setRetainInstance(true);
-
-        mCategoriesListener = new CategoriesPresenter(Injection.provideCategoriesRepository(), this);
-      //  mCategoriesListener.loadCategories(true);
-
+        mCategoriesListener = new CategoriesPresenter(this);
     }
-
-
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//
-//
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_blank, container, false);
-//    }
 
     @Nullable
     @Override
@@ -123,27 +66,6 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         recyclerView.setAdapter(mCategoryAdapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//
-//        int numColumns = getContext().getResources().getInteger(R.integer.num_categories_columns);
-//
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numColumns));
-
-
-
-        // Pull-to-refresh
-//        SwipeRefreshLayout swipeRefreshLayout =
-//                (SwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
-//        swipeRefreshLayout.setColorSchemeColors(
-//                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
-//                ContextCompat.getColor(getActivity(), R.color.colorAccent),
-//                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-             //   mCategoriesListener.loadCategories(true);
-//            }
-//        });
         return root;
     }
 
@@ -158,30 +80,6 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         }
     };
 
-
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
     @Override
     public void showAllProducts(String catId){
         Intent intent = new Intent(getContext(), ProductsActivity.class);
@@ -190,7 +88,7 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
     }
 
     @Override
-    public void showCategories(List<Category> categories){
+    public void showCategories(){
 
         ArrayList<Category> cateList=new ArrayList<>();
         Category women=new Category("women","Women", "women");
@@ -201,9 +99,7 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         cateList.add(men);
         cateList.add(kids);
 
-
         mCategoryAdapter.replaceData(cateList);
-
     }
 
 
@@ -233,19 +129,20 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
             Category category = mCategories.get(position);
 
-
-            viewHolder.title.setText(category.getDescription());
-       //     viewHolder.description.setText(category.getDescription());
+           viewHolder.description.setText(category.getDescription());
 
             if(category.name.equals("women")){
                 viewHolder.image.setImageResource(R.drawable.woman_category);
+
+                viewHolder.image.setContentDescription("Category Women");
             }
             if(category.name.equals("men")){
                 viewHolder.image.setImageResource(R.drawable.man_category);
-
+                viewHolder.image.setContentDescription("Category Men");
             }
             if(category.name.equals("kids-and-baby")){
                 viewHolder.image.setImageResource(R.drawable.kids_category);
+                viewHolder.image.setContentDescription("Category Kids");
             }
 
         }
@@ -279,13 +176,10 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
             public ViewHolder(View itemView, CategoryItemListener listener) {
                 super(itemView);
                 mItemListener = listener;
-                title = (TextView) itemView.findViewById(R.id.category_detail_title);
                 description = (TextView) itemView.findViewById(R.id.category_detail_description);
                 image=(ThreeTwoImageView)itemView.findViewById(R.id.image_category);
-
                 itemView.setOnClickListener(this);
             }
-
             @Override
             public void onClick(View v) {
                 int position = getAdapterPosition();
@@ -299,18 +193,5 @@ public class CategoriesFragment extends Fragment implements CategoriesContract.V
 
         void onCategoryClick(Category clickedCategory);
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+
 }

@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toolbar;
 
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.util.StyleStumbleApplication;
@@ -19,34 +21,22 @@ import com.google.android.gms.tagmanager.TagManager;
 
 import java.util.concurrent.TimeUnit;
 
-//import com.example.carolinamarin.stylestumble.categories.Injection;
 
 public class CategoriesActivity extends AppCompatActivity {
-    private CategoriesContract.UserActionsListener mCategoriesListener;
     TagManager mTagManager;
+    private CategoriesContract.UserActionsListener mCategoriesListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
-//        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                switch(item.getItemId()){
-//                    case R.id.action_settings:
-//                        // TODO
-//                        break;
-//                    // TODO: Other cases
-//                }
-//                return true;
-//            }
-//        });
-//        // Inflate a menu to be displayed in the toolbar
-//
-//        toolbarBottom.inflateMenu(R.menu.menu_main);
 
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setActionBar(toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        getActionBar().setDisplayShowTitleEnabled(true);
+        getActionBar().setTitle("Style Stumble");
 
-      //  mCategoriesListener = new CategoriesPresenter(Injection.provideCategoriesRepository(), this);
 
         if (null == savedInstanceState) {
             initFragment(CategoriesFragment.newInstance());
@@ -62,11 +52,9 @@ public class CategoriesActivity extends AppCompatActivity {
                 .setAction("Show list of categories")
                 .setLabel("Categories Label")
                 .build());
-
-
     }
 
-    public void loadGTMContainer () {
+    public void loadGTMContainer() {
         // TODO Get the TagManager
         mTagManager = ((StyleStumbleApplication) getApplication()).getTagManager();
 
@@ -113,23 +101,16 @@ public class CategoriesActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

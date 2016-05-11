@@ -8,9 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.TabLayout;
 import android.support.test.espresso.IdlingResource;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,7 +17,6 @@ import android.widget.SearchView;
 import android.widget.Toolbar;
 
 import com.example.carolinamarin.stylestumble.R;
-import com.example.carolinamarin.stylestumble.addProductWishList.WishListActivity;
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListFragment;
 import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleFragment;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;
@@ -33,33 +29,31 @@ import com.google.android.gms.analytics.Tracker;
 
 public class ProductsActivity extends AppCompatActivity {
     public static final String CAT_ID = "CAT_ID";
-
+    private static int setMenu = 1;
     private ProductsContract.UserActionsListener mActionsListener;
     private int number_products = 0;
     private int offset = 0;
     private String searchQuery;
     private Context mContext;
     private BroadcastReceiver mReceiver;
-    private  String categoryId;
+    private String categoryId;
     private Menu menu;
     private SearchView searchView;
-    private static int setMenu=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
-        mContext=this;
-         categoryId = getIntent().getStringExtra(CAT_ID);
+        mContext = this;
+        categoryId = getIntent().getStringExtra(CAT_ID);
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.carolina_app_title);
+
         setActionBar(toolbar);
-        //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setVisibility(View.VISIBLE);
-        getActionBar().setDisplayShowTitleEnabled(false);
-
-
+        getActionBar().setDisplayShowTitleEnabled(true);
+        getActionBar().setTitle("Style Stumble");
 
 
         final CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.tabanim_viewpager);
@@ -73,9 +67,9 @@ public class ProductsActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
 
-        int position = getIntent().getIntExtra("POSITION_KEY",0);
-        if(position!=0){
-        viewPager.setCurrentItem(position);
+        int position = getIntent().getIntExtra("POSITION_KEY", 0);
+        if (position != 0) {
+            viewPager.setCurrentItem(position);
         }
 
 
@@ -104,32 +98,23 @@ public class ProductsActivity extends AppCompatActivity {
 
 
     }
-//
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//
-//    }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         this.menu = menu;
 
-             if(setMenu==1) {
-                 getMenuInflater().inflate(R.menu.menu_products, menu);
-         MenuItem item = menu.findItem(R.id.search);
-         item.setVisible(true);
-     }
+        if (setMenu == 1) {
+            getMenuInflater().inflate(R.menu.menu_products, menu);
+            MenuItem item = menu.findItem(R.id.search);
+            item.setVisible(true);
+        }
         return true;
     }
 
 
-
     private void setUpViewPager(final CustomViewPager viewPager) {
-       final  TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
+        final TabFragmentPagerAdapter adapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(ProductsFragment.newInstance(categoryId), "Popular");
         adapter.addFragment(WishListFragment.newInstance(), "Wish List");
         adapter.addFragment(ProductSaleFragment.newInstance(), "Sales");
@@ -145,11 +130,14 @@ public class ProductsActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 MenuItem item = menu.findItem(R.id.search);
-                setMenu=0;
+                setMenu = 0;
                 item.setVisible(false);
-                if(position==0){
-                   setMenu=1;
+                if (position == 0) {
+                    setMenu = 1;
                     item.setVisible(true);
+                }
+                if(position==2){
+                    adapter.getItem(position).onResume();
                 }
             }
 
@@ -170,30 +158,12 @@ public class ProductsActivity extends AppCompatActivity {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to search your data somehow
-
         }
     }
 
-    public void showWishList(View view) {
-
-        Intent intent = new Intent(this, WishListActivity.class);
-        startActivity(intent);
-    }
-
-
-    public void initFragment(Fragment detailFragment) {
-        // Add the NotesDetailFragment to the layout
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.contentFrame2, detailFragment);
-        transaction.commit();
-    }
 
     @VisibleForTesting
     public IdlingResource getCountingIdlingResource() {
         return EspressoIdlingResource.getIdlingResource();
     }
-
-
 }

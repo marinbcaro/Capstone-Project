@@ -76,11 +76,6 @@ public class ProductProvider {
                 type = "vnd.android.cursor.dir/userpreferences")
         public static final Uri USERPREFERENCES = buildUri("userpreferences");
 
-//        @ContentUri(
-//                path = "savenotification",
-//                type = "vnd.android.cursor.item/savenotification")
-//        public static final Uri SAVENOTIFICATION = buildUri("savenotification");
-
     }
 
 

@@ -25,33 +25,24 @@ import retrofit2.http.Query;
  */
 public class ProductsServiceApiImpl implements ProductsServiceApi {
 
-    private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
     private static final String BASE_URL = "/api/v2/products";
     private static final String API_KEY = "?pid=uid9049-30800243-85";
     private static final String API_URL = BASE_URL + API_KEY;
-    private  ArrayMap<String, Product> DATA = new ArrayMap(2);
+    private ArrayMap<String, Product> DATA = new ArrayMap(2);
 
-//    private static void addProduct(String id, String description, String name, String url, Brand brand, Double price, Image image) {
-//        Product product = new Product(id, description, name, url, brand, price, image);
-//
-//        DATA.put(product.getId(), product);
-//    }
 
     @Override
-    public void getProductsCategories(String catId, String search,int offset,final ProductsServiceCallback callback) {
-        getData(catId, search,offset,callback);
+    public void getProductsCategories(String catId, String search, int offset, final ProductsServiceCallback callback) {
+        getData(catId, search, offset, callback);
     }
-
 
     @Override
     public void getProduct(final String productId, final GetProductServiceCallback callback) {
-        //TODO: Add network latency here too.
-
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                Log.d("MyTAG", "OkHttp: " + message);
+                //  Log.d("MyTAG", "OkHttp: " + message);
             }
         });
         OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
@@ -75,9 +66,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
                 if (response.isSuccess()) {
                     DATA.clear();
-
                     ProductDetail productInfo = response.body();
-
                     callback.onProductLoaded(productInfo);
 
                 } else {
@@ -95,11 +84,11 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
     }
 
 
-    public void getData(String catId, String search,int offset,final ProductsServiceCallback callback) {
+    public void getData(String catId, String search, int offset, final ProductsServiceCallback callback) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                Log.d("MyTAG", "OkHttp: " + message);
+                //  Log.d("MyTAG", "OkHttp: " + message);
             }
         });
         OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
@@ -115,7 +104,7 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
 
         ShopStyleService mService = retrofit.create(ShopStyleService.class);
 
-        Call<ListProducts> call = mService.listProducts(catId,search,offset);
+        Call<ListProducts> call = mService.listProducts(catId, search, offset);
         call.enqueue(new Callback<ListProducts>() {
             @Override
             public void onResponse(Call<ListProducts> call, Response<ListProducts> response) {
@@ -129,17 +118,17 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                         Brand h = productInfo.getBrand();
                         Image ima = productInfo.getImage();
 
-                        String salePrice="0";
-                        String unbranded="";
-                        if(productInfo.getSalePrice()!=null){
-                            salePrice=productInfo.getSalePrice();
+                        String salePrice = "0";
+                        String unbranded = "";
+                        if (productInfo.getSalePrice() != null) {
+                            salePrice = productInfo.getSalePrice();
                         }
-                        if(productInfo.getUnbrandedName()!=null){
-                            unbranded=productInfo.getUnbrandedName();
+                        if (productInfo.getUnbrandedName() != null) {
+                            unbranded = productInfo.getUnbrandedName();
                         }
 
-                      //  addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
-                        Product product = new Product(productInfo.getId(), productInfo.getName(), productInfo.getName(), productInfo.getUrl(), h, productInfo.getPrice(), ima,salePrice,unbranded);
+                        //  addProduct(contributor.getId(), contributor.getName(), contributor.getName(), contributor.getUrl(), h, contributor.getPrice(), ima);
+                        Product product = new Product(productInfo.getId(), productInfo.getName(), productInfo.getName(), productInfo.getUrl(), h, productInfo.getPrice(), ima, salePrice, unbranded);
 
                         DATA.put(product.getId(), product);
                     }
@@ -158,18 +147,14 @@ public class ProductsServiceApiImpl implements ProductsServiceApi {
                 Log.d("Error", t.getMessage());
             }
         });
-
     }
 
 
     public interface ShopStyleService {
-
         @GET(API_URL + "&sort=Popular&limit=10")
-        Call<ListProducts> listProducts(@Query("cat") String catId,@Query("fts") String search,@Query("offset") int offset );
+        Call<ListProducts> listProducts(@Query("cat") String catId, @Query("fts") String search, @Query("offset") int offset);
 
-
-
-        @GET(BASE_URL + "/{id}"+API_KEY)
+        @GET(BASE_URL + "/{id}" + API_KEY)
         Call<ProductDetail> getProduct(@Path("id") String id);
     }
 

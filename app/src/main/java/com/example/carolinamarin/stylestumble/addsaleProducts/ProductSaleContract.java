@@ -14,12 +14,9 @@ public interface ProductSaleContract {
 
         void showNotification(ProductDetail id);
         void showDetailProduct(String id);
-
-
     }
 
     interface UserActionsListener {
-
         void loadProduct(@Nullable String productId);
         void openProductDetails(@NonNull String productId);
     }

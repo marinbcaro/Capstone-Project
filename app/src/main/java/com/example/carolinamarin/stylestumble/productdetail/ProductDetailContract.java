@@ -8,30 +8,15 @@ import android.support.annotation.Nullable;
 public interface ProductDetailContract {
 
     interface View {
-
         void setProgressIndicator(boolean active);
-//
-//        void showMissingNote();
-//
-        void hideTitle();
-
         void showTitle(String title,String image);
-
-//        void showImage(String imageUrl);
-//
-//        void hideImage();
-//
-//        void hideDescription();
-//
         void showDescription(String description);
-        void showBrand(String brand);
         void showRetailer(String retailer);
         void showPrice(Double price,String salePrice);
         void showShop(String url);
     }
 
     interface UserActionsListener {
-
         void openProduct(@Nullable String productId);
     }
 }
