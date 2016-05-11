@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
+<<<<<<< HEAD
 
 import com.example.carolinamarin.stylestumble.Injection;
+=======
+import android.util.Log;
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
 import com.example.carolinamarin.stylestumble.data.ProductDetail;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;

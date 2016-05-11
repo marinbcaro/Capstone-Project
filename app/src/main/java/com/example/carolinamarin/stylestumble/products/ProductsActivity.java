@@ -16,7 +16,12 @@ import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toolbar;
 
+<<<<<<< HEAD
 import com.example.carolinamarin.stylestumble.R;
+=======
+
+import com.example.carolinamarin.stylestumble.addProductWishList.WishListActivity;
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
 import com.example.carolinamarin.stylestumble.addProductWishList.WishListFragment;
 import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleFragment;
 import com.example.carolinamarin.stylestumble.util.EspressoIdlingResource;

@@ -41,7 +41,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.addsaleProducts.ProductSaleTaskService;
 import com.example.carolinamarin.stylestumble.categories.CategoriesActivity;

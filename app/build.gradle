@@ -34,9 +34,13 @@ android {
 
     // If you need to add more flavors, consider using flavor dimensions.
     productFlavors {
+<<<<<<< HEAD
 //        mock {
 //            applicationIdSuffix = ".mock"
 //        }
+=======
+
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
         prod {
 
         }
@@ -58,9 +62,12 @@ android {
     }
 
     sourceSets {
+<<<<<<< HEAD
         prod { java.srcDirs = ['src/prod/java', 'src/prod/java/'] }
         prodDebug { java.srcDirs = ['src/prodDebug/java', 'src/prod'] }
     //    mock { java.srcDirs = ['src/mock/java', 'src/mock/java/'] }
+=======
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
         main {
             java.srcDirs = ['src/main/java', 'src/main/java/data/provider', 'src/main/java/productdetail']
         }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -20,13 +19,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
+import com.example.carolinamarin.stylestumble.data.CategoriesServiceApiImpl;
 import com.example.carolinamarin.stylestumble.data.Category;
 import com.example.carolinamarin.stylestumble.data.ProductDetail;
+import com.example.carolinamarin.stylestumble.data.ProductsRepository;
+import com.example.carolinamarin.stylestumble.data.ProductsServiceApiImpl;
 import com.example.carolinamarin.stylestumble.data.provider.PreferenceColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
@@ -62,7 +65,12 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+<<<<<<< HEAD
         mActionsListener = new ProductSalePresenter(Injection.provideProductsRepository(), this);
+=======
+        mActionsListener = new ProductSalePresenter((ProductsRepository) new ProductsServiceApiImpl(), this);
+
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
         Cursor c = getActivity().getContentResolver().query(ProductProvider.WishList.PRODUCTSALE,
                 null, null, null, null);
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
@@ -116,7 +124,12 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+<<<<<<< HEAD
         final View root = inflater.inflate(R.layout.fragment_product_sale, container, false);
+=======
+        View root=  inflater.inflate(R.layout.fragment_product_sale, container, false);
+
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
 
 
         final CheckBox checkboxvariable = (CheckBox) root.findViewById(R.id.notification_show);
@@ -163,8 +176,13 @@ public class ProductSaleFragment extends Fragment implements ProductSaleContract
                     cv.put(PreferenceColumns.SHOWNOTIFICATION, value);
 
                 }
+<<<<<<< HEAD
                 Snackbar.make(root, "Settings saved", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+=======
+                Log.d("the value","val"+value);
+                Toast.makeText("Settings saved");
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
                 try {
                     getContext().getContentResolver().update(ProductProvider.UserPreferences.USERPREFERENCES, cv, null, null);
                 } catch (Exception e) {

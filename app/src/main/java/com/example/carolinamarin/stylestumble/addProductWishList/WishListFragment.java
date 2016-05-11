@@ -21,9 +21,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.carolinamarin.stylestumble.Injection;
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Category;
+import com.example.carolinamarin.stylestumble.data.ProductsRepository;
+import com.example.carolinamarin.stylestumble.data.ProductsServiceApiImpl;
 import com.example.carolinamarin.stylestumble.data.provider.ProductColumns;
 import com.example.carolinamarin.stylestumble.data.provider.ProductProvider;
 import com.example.carolinamarin.stylestumble.productdetail.ProductDetailActivity;
@@ -58,7 +59,7 @@ public class WishListFragment extends Fragment implements WishListContract.View,
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        mActionsListener = new WishListPresenter(Injection.provideProductsRepository(), this);
+        mActionsListener = new WishListPresenter((ProductsRepository) new ProductsServiceApiImpl(), this);
         Cursor c = getActivity().getContentResolver().query(ProductProvider.WishList.WISHLIST,
                 null, null, null, null);
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);

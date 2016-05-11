@@ -11,7 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 31e6b410870d0c56145faf1902958a293055f31f
 import com.example.carolinamarin.stylestumble.R;
 import com.example.carolinamarin.stylestumble.data.Category;
 import com.example.carolinamarin.stylestumble.products.ProductsActivity;
